@@ -1,6 +1,6 @@
 # SimpleLisp
 ## BNF-ish
-`
+```
 number := \d+(.\d+)?
 symbol := [^\s]*
 string := "([^"\\]|\\.)*"
@@ -21,4 +21,4 @@ statement :=
 	| <expr>
 	| (def ((<symbol> <expr)+))
 	| (rec ((<symbol> <expr)+))
-`
+```
