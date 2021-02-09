@@ -1,11 +1,24 @@
-# My Personal Project
+# SimpleLisp
+## BNF-ish
+`
+number := \d+(.\d+)?
+symbol := [^\s]*
+string := "([^"\\]|\\.)*"
+char := '.'
+expr :=
+	| <number>
+	| <symbol>
+	| <string>
+	| <char>
+	| (<expr> <expr>*)
+	| (quote <expr>)
+	| (if <expr> <expr> <expr>)
+	| (lambda (<symbol>*) <expr>)
+	| (set! <symbol> <expr>)
+	| (begin <statement>+)
 
-## A subtitle
-
-A *bulleted* list:
-- item 1
-- item 2
-- item 3
-
-An example of text with **bold** and *italic* fonts.  Note that the IntelliJ markdown previewer doesn't seem to render 
-the bold and italic fonts correctly but they will appear correctly on GitHub.
+statement :=
+	| <expr>
+	| (def ((<symbol> <expr)+))
+	| (rec ((<symbol> <expr)+))
+`
