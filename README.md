@@ -22,3 +22,10 @@ statement :=
 	| (def ((<symbol> <expr)+))
 	| (rec ((<symbol> <expr)+))
 ```
+## Reasons why Java is incompetent as a language
+For my own anger management.
++ Generics can't take in primitives
++ All default ways of nicely reading input are a complete mess and practically useless
++ ~~First class functions~~
++ Object systems make terrible type systems
++ Exceptions are clunky
