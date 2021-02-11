@@ -20,4 +20,16 @@ public class String extends Sexpr {
 	public Sexpr eval(Environment env) {
 		return this;
 	}
+
+	public Type type() {
+		return Type.String;
+	}
+
+	public boolean equals(Sexpr expr) {
+		if (expr.type() == Type.String) {
+			return ((String)expr).val.equals(this.val);
+		} else {
+			return false;
+		}
+	}
 }

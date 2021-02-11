@@ -8,37 +8,51 @@ public class Pair extends Sexpr {
 
 	public Pair() {}
 
+	public Pair(Sexpr car, Sexpr cdr) {
+		this.car = car;
+		this.cdr = cdr;
+	}
+
+	// EFFECT: Returns the Sexpr contained in the car.
 	public Sexpr getCar() {
 		return this.car;
 	}
 
+	// MODIFIES: this
+	// EFFECT: Sets the car of this Pair to car.
 	public void setCar(Sexpr car) {
 		this.car = car;
 	}
 
+	// EFFECT: Returns the Sexpr contained in the cdr.
 	public Sexpr getCdr() {
 		return this.cdr;
 	}
 
+	// EFFECT: Sets the cdr of this Pair to cdr.
 	public void setCdr(Sexpr cdr) {
 		this.cdr = cdr;
 	}
 
+	// EFFECT: Writes the string representation of this Pair to ps.
 	public void write(PrintStream ps) {
 		ps.print(this.toString());
 	}
 
+
+	// EFFECT: Returns the string representation of this Pair.
 	public java.lang.String toString() {
 		java.lang.String acc = "(";
 
 		Pair current = this;
 
+		// Prints lists nicely, e.g. (cons 1 (cons 2 '())) gets printed as (1 2)
 		while (true) {
 			acc += current.car.toString();
 			if (current.cdr instanceof Pair) {
 				acc += " ";
 				current = (Pair)current.cdr;
-			} else if (current.cdr == Null.getInstance()) {
+			} else if (current.cdr.type() == Type.Null) {
 				acc += ")";
 				break;
 			} else {
@@ -52,6 +66,8 @@ public class Pair extends Sexpr {
 		return acc;
 	}
 
+	// EFFECT: Returns the Sexpr this pair evaluates to.
+	// If the car is a procedure apply it to the cdr, else throw an exception.
 	public Sexpr eval(Environment env) throws Exception {
 		Sexpr proc = this.car.eval(env);
 		if (!(proc instanceof Procedure)) {
@@ -61,7 +77,13 @@ public class Pair extends Sexpr {
 		}
 	}
 
+	// EFFECT: Returns the Pair Type.
 	public Type type() {
 		return Type.Pair;
+	}
+
+	// EFFECT: Returns true if expr is the same object as this.
+	public boolean equals(Sexpr expr) {
+		return expr == this;
 	}
 }

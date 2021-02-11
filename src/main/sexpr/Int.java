@@ -13,23 +13,37 @@ public class Int extends Sexpr {
 		this.val = val;
 	}
 
+	// EFFECT: Prints the string representation of this Int to ps.
 	public void write(PrintStream ps) {
 		ps.print(this.toString());
 	}
 
+	// EFFECT: Returns the string representation of this Int.
 	public java.lang.String toString() {
 		return Long.toString(val);
 	}
 
+	// EFFECT: Return the evaluated form of this Int; Ints are self-evaluating.
 	public Sexpr eval(Environment env) {
 		return this;
 	}
 
+	// EFFECT: Return the Int Type.
 	public Type type() {
 		return Type.Int;
 	}
 
-	public Sexpr add(Int i) {
-		return new Int(this.val + i.val);
+	// EFFECT: Returns true if expr is an Int and contains the same val, false otherwise.
+	public boolean equals(Sexpr expr) {
+		if (expr.type() == Type.Int) {
+			return ((Int)expr).val == this.val;
+		} else {
+			return false;
+		}
+	}
+
+	// EFFECT: Return the val this Int contains.
+	public long getVal() {
+		return this.val;
 	}
 }

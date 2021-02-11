@@ -5,8 +5,8 @@ public enum Type {
 	Int,
 	Null,
 	Pair,
-	Sexpr,
 	String,
 	Symbol,
+	Bool,
 	Procedure
 }
