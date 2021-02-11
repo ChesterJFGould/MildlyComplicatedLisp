@@ -29,3 +29,4 @@ For my own anger management.
 + ~~First class functions~~
 + Object systems make terrible type systems
 + Exceptions are clunky
++ Programming in Java feels like smashing your head into a bureaucratic wall.

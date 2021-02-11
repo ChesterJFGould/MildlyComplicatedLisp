@@ -13,7 +13,15 @@ public class Float extends Sexpr {
 		ps.print(val);
 	}
 
-	public Sexpr eval() {
+	public Sexpr eval(Environment env) {
 		return this;
+	}
+
+	public java.lang.String toString() {
+		return Double.toString(this.val);
+	}
+
+	public Type type() {
+		return Type.Float;
 	}
 }

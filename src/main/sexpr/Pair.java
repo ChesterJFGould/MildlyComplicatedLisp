@@ -25,29 +25,43 @@ public class Pair extends Sexpr {
 	}
 
 	public void write(PrintStream ps) {
-		ps.print("("); //)
+		ps.print(this.toString());
+	}
+
+	public java.lang.String toString() {
+		java.lang.String acc = "(";
 
 		Pair current = this;
 
 		while (true) {
-			current.car.write(ps);
-
+			acc += current.car.toString();
 			if (current.cdr instanceof Pair) {
-				ps.print(" ");
+				acc += " ";
 				current = (Pair)current.cdr;
 			} else if (current.cdr == Null.getInstance()) {
-				ps.print(")");
+				acc += ")";
 				break;
 			} else {
-				ps.print(" . ");
-				current.cdr.write(ps);
-				ps.print(")");
+				acc += " . ";
+				acc += current.cdr.toString();
+				acc += ")";
 				break;
 			}
 		}
+
+		return acc;
 	}
 
-	public Sexpr eval() {
-		return this;
+	public Sexpr eval(Environment env) throws Exception {
+		Sexpr proc = this.car.eval(env);
+		if (!(proc instanceof Procedure)) {
+			throw new Exception("Cannot apply non-procedure %s", this.car.toString());
+		} else {
+			return ((Procedure)proc).apply(env, this.cdr);
+		}
+	}
+
+	public Type type() {
+		return Type.Pair;
 	}
 }

@@ -19,7 +19,15 @@ public class Null extends Sexpr {
 		ps.print("()");
 	}
 
-	public Sexpr eval() {
+	public Sexpr eval(Environment env) {
 		return this;
+	}
+
+	public java.lang.String toString() {
+		return "()";
+	}
+
+	public Type type() {
+		return Type.Null;
 	}
 }

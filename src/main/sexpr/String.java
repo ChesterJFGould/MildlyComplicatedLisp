@@ -10,12 +10,14 @@ public class String extends Sexpr {
 	}
 
 	public void write(PrintStream ps) {
-		ps.print("\"");
-		ps.print(val);
-		ps.print("\"");
+		ps.print(this.toString());
 	}
 
-	public Sexpr eval() {
+	public java.lang.String toString() {
+		return java.lang.String.format("\"%s\"", this.val);
+	}
+
+	public Sexpr eval(Environment env) {
 		return this;
 	}
 }

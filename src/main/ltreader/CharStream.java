@@ -56,9 +56,9 @@ public class CharStream {
 		}
 	}
 
-	public void expect(char c) throws sexpr.ParseException {
+	public void expect(char c) throws sexpr.Exception {
 		if (this.peek() != c) {
-			throw new sexpr.ParseException("Expected %c but instead found %c", c, this.peek());
+			throw new sexpr.Exception("Expected %c but instead found %c", c, this.peek());
 		}
 		this.next();
 	}

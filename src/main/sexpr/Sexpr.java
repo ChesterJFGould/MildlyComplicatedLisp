@@ -6,9 +6,13 @@ import java.io.PrintStream;
 public abstract class Sexpr {
 	public abstract void write(PrintStream ps);
 
-	public abstract Sexpr eval();
+	public abstract Sexpr eval(Environment env) throws Exception;
 
-	public static Sexpr read(CharStream cs) throws ParseException {
+	public abstract java.lang.String toString();
+
+	public abstract Type type();
+
+	public static Sexpr read(CharStream cs) throws Exception {
 		cs.eatWhitespace();
 		switch (cs.peek()) {
 		case '(': //)
@@ -17,13 +21,13 @@ public abstract class Sexpr {
 			return Sexpr.readString(cs);
 		case ')':
 			cs.next();
-			throw new ParseException("Unexpected )");
+			throw new Exception("Unexpected )");
 		default:
 			return Sexpr.readAtom(cs);
 		}
 	}
 
-	private static Sexpr readAtom(CharStream cs) throws ParseException {
+	private static Sexpr readAtom(CharStream cs) throws Exception {
 		java.lang.String atom = cs.readUntil(c -> Character.isWhitespace(c) || "()\"".contains(Character.toString(c)));
 		if (atom.matches("[\\-\\+]?\\d+")) {
 			return new Int(atom);
@@ -34,7 +38,7 @@ public abstract class Sexpr {
 		}
 	}
 
-	private static Sexpr readString(CharStream cs) throws ParseException {
+	private static Sexpr readString(CharStream cs) throws Exception {
 		cs.expect('"');
 
 		java.lang.String acc = "";
@@ -57,7 +61,7 @@ public abstract class Sexpr {
 		return new String(acc);
 	}
 
-	private static Sexpr readList(CharStream cs) throws ParseException {
+	private static Sexpr readList(CharStream cs) throws Exception {
 		cs.expect('('); //)
 
 		cs.eatWhitespace();
@@ -78,7 +82,6 @@ public abstract class Sexpr {
 			pair = (Pair)(pair.getCdr());
 			pair.setCar(Sexpr.read(cs));
 			cs.eatWhitespace();
-			System.out.println(cs.peeks());
 		}
 
 		if (cs.peek() == '.') {

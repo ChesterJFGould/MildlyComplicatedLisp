@@ -9,11 +9,27 @@ public class Int extends Sexpr {
 		val = Long.parseLong(s);
 	}
 
-	public void write(PrintStream ps) {
-		ps.print(val);
+	public Int(long val) {
+		this.val = val;
 	}
 
-	public Sexpr eval() {
+	public void write(PrintStream ps) {
+		ps.print(this.toString());
+	}
+
+	public java.lang.String toString() {
+		return Long.toString(val);
+	}
+
+	public Sexpr eval(Environment env) {
 		return this;
+	}
+
+	public Type type() {
+		return Type.Int;
+	}
+
+	public Sexpr add(Int i) {
+		return new Int(this.val + i.val);
 	}
 }
