@@ -165,5 +165,19 @@ public class Main {
 		env.put("quote", new Procedure("obj", (Environment ignored, Sexpr args) -> {
 			return ((Pair)args).getCar();
 		}));
+
+		// Begin form
+		env.put("begin", new Procedure(". exprs", (Environment beginEnv, Sexpr args) -> {
+			beginEnv = new Environment(env);
+
+			Sexpr ret = new Null();
+
+			while (args.type() != Type.Null) {
+				ret = ((Pair)args).getCar().eval(beginEnv);
+				args = ((Pair)args).getCdr();
+			}
+
+			return ret;
+		}));
 	}
 }

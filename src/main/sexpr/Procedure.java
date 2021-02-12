@@ -242,18 +242,17 @@ public class Procedure extends Sexpr {
 			java.lang.String[] vars = args.split(" ");
 
 			for (int i = 0; i < vars.length; i++) {
-				if (vars[i] == ".") {
+				if (vars[i].equals(".")) {
 					if (vars.length != i + 2) {
 						throw new Exception("Invalid Procedure Signature %s", args);
 					} else {
 						this.vararg = vars[i + 1];
 					}
+					break;
 				} else {
 					this.args.add(vars[i]);
 				}
 			}
 		}
-
 	}
-
 }
