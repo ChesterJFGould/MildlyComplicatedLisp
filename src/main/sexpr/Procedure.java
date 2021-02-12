@@ -115,7 +115,7 @@ public class Procedure extends Sexpr {
 		}));
 	}
 
-	// EFFECCT: Returns a Procedure that takes in two arguments. If the first isn't
+	// EFFECT: Returns a Procedure that takes in two arguments. If the first isn't
 	// a pair then throw an exception, else return the result of applying op to the
 	// arguments. Meant to be used to implements set-car/cdr, hence the name.
 	public static Procedure newPairSetter(java.lang.String name, BiFunction<Pair, Sexpr, Sexpr> op) throws Exception {
@@ -132,14 +132,19 @@ public class Procedure extends Sexpr {
 		}));
 	}
 
+	// EFFECT: Returns the evaluated form of this Procedure. Procedures are
+	// self-evaluating.
 	public Sexpr eval(Environment env) {
 		return this;
 	}
 
+	// EFFECT: Returns the Type Procedure.
 	public Type type() {
 		return Type.Procedure;
 	}
 
+	// EFFECT: Calls this Procedures handler with the give arguments in the given
+	// environment and returns the result.
 	public Sexpr apply(Environment env, Sexpr args) throws Exception {
 		if (signature.validate(args)) {
 			return this.handler.handle(env, args);
@@ -150,18 +155,23 @@ public class Procedure extends Sexpr {
 		}
 	}
 
+	// EFFECT: Prints the string representation of this Procedure to ps.
 	public void write(PrintStream ps) {
 		ps.print(this.toString());
 	}
 
+	// EFFECT: Returns the string representation of this Procedure.
 	public java.lang.String toString() {
 		return java.lang.String.format("<Procedure %s>", this.signature.toString());
 	}
 
+	// EFFECT: Returns true if expr is the same object as this.
 	public boolean equals(Sexpr expr) {
 		return expr == this;
 	}
 
+	// Represents a method signature. Used to verify that the given arguments
+	// match what the handler wants.
 	private class Signature {
 		private List<java.lang.String> args;
 		private java.lang.String vararg;
@@ -180,6 +190,7 @@ public class Procedure extends Sexpr {
 			this.parse(args);
 		}
 
+		// EFFECT: Returns the string representation of this Signature.
 		public java.lang.String toString() {
 			java.lang.String acc = "(" + java.lang.String.join(" ", this.args);
 			if (this.vararg != null) {
@@ -189,6 +200,9 @@ public class Procedure extends Sexpr {
 			return acc + ")";
 		}
 
+		// EFFECT: Returns true if args is a list that matches the signature,
+		// false otherwise.
+		// e.g. "a b" matches (1 2), "a" doesn't match (1 2).
 		public boolean validate(Sexpr args) {
 			Sexpr current = args;
 			for (java.lang.String s : this.args) {
@@ -205,6 +219,9 @@ public class Procedure extends Sexpr {
 			return true;
 		}
 
+		// MODIFIES: this.
+		// EFFECT: Parse args into this Signature.
+		// e.g. (a b . c) -> args = {"a", "b"}, vararg = "c"
 		private void parse(Sexpr args) throws Exception {
 			if (args instanceof Pair && ((Pair)args).getCar() instanceof Symbol) {
 				this.args.add(((Pair)args).getCar().toString());
@@ -218,6 +235,9 @@ public class Procedure extends Sexpr {
 			}
 		}
 
+		// MODIFIES: this.
+		// EFFECT: Parse args into this Signature.
+		// e.g. "a b . c" -> args = {"a", "b"}, vararg = "c"
 		private void parse(java.lang.String args) throws Exception {
 			java.lang.String[] vars = args.split(" ");
 
