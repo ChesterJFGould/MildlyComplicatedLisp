@@ -15,6 +15,9 @@ public class CharStream {
 		this.next();
 	}
 
+	// MODIFIES: this.
+	// EFFECT: Returns current and sets current to the next char in inStream.
+	// If inStream is EOF or encounters an error set done to true.
 	public char next() {
 		char now = this.current;
 		try {
@@ -31,14 +34,18 @@ public class CharStream {
 		return now;
 	}
 
+	// EFFECT: Returns current.
 	public char peek() {
 		return this.current;
 	}
 
+	// EFFECT: Returns current converted to a string.
 	public String peeks() {
 		return Character.toString(this.current);
 	}
 
+	// MODIFIES: this.
+	// EFFECT: Returns all the characters until delimPred returns true.
 	public String readUntil(Predicate<Character> delimPred) {
 		String acc = "";
 
@@ -50,12 +57,16 @@ public class CharStream {
 		return acc;
 	}
 
+	// MODIFIES: this.
+	// EFFECT: Eats all the pending whitespace.
 	public void eatWhitespace() {
 		while (Character.isWhitespace(this.peek())) {
 			this.next();
 		}
 	}
 
+	// MODIFIES: this.
+	// EFFECT: If the next char isn't equal to c throws an exception.
 	public void expect(char c) throws sexpr.Exception {
 		if (this.peek() != c) {
 			throw new sexpr.Exception("Expected %c but instead found %c", c, this.peek());
@@ -63,6 +74,7 @@ public class CharStream {
 		this.next();
 	}
 
+	// EFFECT: Returns done.
 	public boolean done() {
 		return this.done;
 	}

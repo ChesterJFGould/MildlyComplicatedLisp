@@ -5,6 +5,7 @@ import ltreader.CharStream;
 import sexpr.*;
 
 public class Main {
+	// EFFECTS: Sets up the Simple Lisp environment and starts the repl.
 	public static void main(java.lang.String[] args) throws sexpr.Exception {
 		sexpr.Environment env = new sexpr.Environment();
 
@@ -13,6 +14,7 @@ public class Main {
 		repl(env);
 	}
 
+	// EFFECTS: Starts a repl (Read, Eval, Print, Loop).
 	public static void repl(sexpr.Environment env) {
 		System.out.print("> ");
 
@@ -31,10 +33,13 @@ public class Main {
 		System.out.println("");
 	}
 
+	// EFFECTS: Adds the base Simple Lisp constructs to env.
 	public static void initSimpleLisp(Environment env) throws sexpr.Exception {
+		// Bools
 		env.put("true", new Bool(true));
 		env.put("false", new Bool(false));
 
+		// Numeric operators.
 		env.put("+", Procedure.newNumericBinaryOperator("+", (Long a, Long b) -> new Int(a + b),
 			(Double a, Double b) -> new sexpr.Float(a + b)));
 		env.put("-", Procedure.newNumericBinaryOperator("-", (Long a, Long b) -> new Int(a - b),
@@ -43,6 +48,7 @@ public class Main {
 			(Double a, Double b) -> new sexpr.Float(a * b)));
 		env.put("/", Procedure.newNumericBinaryOperator("/", (Long a, Long b) -> new Int(a / b),
 			(Double a, Double b) -> new sexpr.Float(a / b)));
+		// Numeric predicates.
 		env.put("<", Procedure.newNumericBinaryOperator("<", (Long a, Long b) -> new Bool(a < b),
 			(Double a, Double b) -> new Bool(a < b)));
 		env.put(">", Procedure.newNumericBinaryOperator(">", (Long a, Long b) -> new Bool(a > b),
@@ -54,6 +60,7 @@ public class Main {
 		env.put(">=", Procedure.newNumericBinaryOperator(">=", (Long a, Long b) -> new Bool(a >= b),
 			(Double a, Double b) -> new Bool(a >= b)));
 
+		// Pair operators.
 		env.put("cons", Procedure.newBinaryOperator((Sexpr a, Sexpr b) -> {
 			Pair pair = new Pair();
 			pair.setCar(a);
@@ -61,11 +68,10 @@ public class Main {
 
 			return pair;
 		}));
-
 		env.put("car", Procedure.newPairUnaryOperator("car", (Pair pair) -> pair.getCar()));
 		env.put("cdr", Procedure.newPairUnaryOperator("car", (Pair pair) -> pair.getCdr()));
-		env.put("cdr", Procedure.newPairUnaryOperator("car", (Pair pair) -> pair.getCdr()));
 
+		// Type predicates.
 		env.put("float?", Procedure.newTypePredicate(Type.Int));
 		env.put("int?", Procedure.newTypePredicate(Type.Int));
 		env.put("null?", Procedure.newTypePredicate(Type.Null));
@@ -75,8 +81,10 @@ public class Main {
 		env.put("bool?", Procedure.newTypePredicate(Type.Bool));
 		env.put("procedure?", Procedure.newTypePredicate(Type.Procedure));
 
+		// Simple equality predicate.
 		env.put("eq?", Procedure.newBinaryOperator((Sexpr a, Sexpr b) -> new Bool(a.equals(b))));
 
+		// Definition form.
 		env.put("def", new Procedure("var val", (Environment defEnv, Sexpr defArgs) -> {
 			Sexpr var = ((Pair)defArgs).getCar();
 			if (var.type() != Type.Symbol) {
@@ -90,6 +98,7 @@ public class Main {
 			return new Null();
 		}));
 
+		// Set form.
 		env.put("set!", new Procedure("var val", (Environment defEnv, Sexpr defArgs) -> {
 			Sexpr var = ((Pair)defArgs).getCar();
 			if (var.type() != Type.Symbol) {
@@ -105,16 +114,17 @@ public class Main {
 			return new Null();
 		}));
 
+		// Pair set forms.
 		env.put("set-car!", Procedure.newPairSetter("set-car!", (Pair pair, Sexpr val) -> {
 				pair.setCar(val);
 				return new Null();
 			}));
-
 		env.put("set-cdr!", Procedure.newPairSetter("set-cdr!", (Pair pair, Sexpr val) -> {
 				pair.setCdr(val);
 				return new Null();
 			}));
 
+		// If form.
 		env.put("if", new Procedure("predicate consequence alternative", (Environment ifEnv, Sexpr ifArgs) -> {
 			Sexpr pred = ((Pair)ifArgs).getCar().eval(ifEnv);
 			ifArgs = ((Pair)ifArgs).getCdr();
@@ -126,6 +136,7 @@ public class Main {
 			}
 		}));
 
+		// Lambda form.
 		env.put("lambda", new Procedure("arguments body", (Environment lamEnv, Sexpr lamArgs) -> {
 			Sexpr funVars = ((Pair)lamArgs).getCar();
 			lamArgs = ((Pair)lamArgs).getCdr();
@@ -150,6 +161,7 @@ public class Main {
 			}));
 		}));
 
+		// Quote form.
 		env.put("quote", new Procedure("obj", (Environment ignored, Sexpr args) -> {
 			return ((Pair)args).getCar();
 		}));
