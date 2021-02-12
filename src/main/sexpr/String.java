@@ -9,11 +9,6 @@ public class String extends Sexpr {
 		this.val = s;
 	}
 
-	// EFFECT: Writes the string representation of this String to ps.
-	public void write(PrintStream ps) {
-		ps.print(this.toString());
-	}
-
 	// EFFECT: Returns the string representation of this String.
 	public java.lang.String toString() {
 		return java.lang.String.format("\"%s\"", this.val);

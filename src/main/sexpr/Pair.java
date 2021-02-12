@@ -34,12 +34,6 @@ public class Pair extends Sexpr {
 		this.cdr = cdr;
 	}
 
-	// EFFECT: Writes the string representation of this Pair to ps.
-	public void write(PrintStream ps) {
-		ps.print(this.toString());
-	}
-
-
 	// EFFECT: Returns the string representation of this Pair.
 	public java.lang.String toString() {
 		java.lang.String acc = "(";

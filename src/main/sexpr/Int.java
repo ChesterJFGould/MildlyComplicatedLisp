@@ -13,11 +13,6 @@ public class Int extends Sexpr {
 		this.val = val;
 	}
 
-	// EFFECT: Prints the string representation of this Int to ps.
-	public void write(PrintStream ps) {
-		ps.print(this.toString());
-	}
-
 	// EFFECT: Returns the string representation of this Int.
 	public java.lang.String toString() {
 		return Long.toString(val);

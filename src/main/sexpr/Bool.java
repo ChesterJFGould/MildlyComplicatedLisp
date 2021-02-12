@@ -9,12 +9,6 @@ public class Bool extends Sexpr {
 		this.val = val;
 	}
 
-	// EFFECT: The string representation of this Bool is printed to ps.
-	@Override
-	public void write(PrintStream ps) {
-		ps.print(this.toString());
-	}
-
 	// EFFECT: Returns the string representation of this Bool.
 	public java.lang.String toString() {
 		if (val) {

@@ -155,11 +155,6 @@ public class Procedure extends Sexpr {
 		}
 	}
 
-	// EFFECT: Prints the string representation of this Procedure to ps.
-	public void write(PrintStream ps) {
-		ps.print(this.toString());
-	}
-
 	// EFFECT: Returns the string representation of this Procedure.
 	public java.lang.String toString() {
 		return java.lang.String.format("<Procedure %s>", this.signature.toString());

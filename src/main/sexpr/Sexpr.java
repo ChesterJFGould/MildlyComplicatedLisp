@@ -3,9 +3,11 @@ package sexpr;
 import ltreader.CharStream;
 import java.io.PrintStream;
 
-public abstract class Sexpr {
+public class Sexpr {
 	// Write a representation of the Sexpr to ps.
-	public abstract void write(PrintStream ps);
+	public void write(PrintStream ps) {
+		ps.print(this.toString());
+	}
 
 	// Return the evaluated form of the Sexpr w.r.t. env.
 	public abstract Sexpr eval(Environment env) throws Exception;

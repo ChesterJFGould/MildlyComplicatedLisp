@@ -13,11 +13,6 @@ public class Float extends Sexpr {
 		this.val = d;
 	}
 
-	// EFFECT: Prints the string representation of this Float to ps.
-	public void write(PrintStream ps) {
-		ps.print(val);
-	}
-
 	// EFFECT: Returns the string representation of this Float.
 	public java.lang.String toString() {
 		return Double.toString(this.val);

@@ -9,11 +9,6 @@ public class Symbol extends Sexpr {
 		this.val = s.intern(); // String equality becomes a point comparison.
 	}
 
-	// EFFECT: Write the string representation of this Symbol to ps.
-	public void write(PrintStream ps) {
-		ps.print(this.val);
-	}
-
 	// EFFECT: Return the string representation of this Symbol.
 	public java.lang.String toString() {
 		return this.val;

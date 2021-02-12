@@ -5,11 +5,6 @@ import java.io.PrintStream;
 public class Null extends Sexpr {
 	public Null() {}
 
-	// EFFECT: Writes the String representation of Null to ps.
-	public void write(PrintStream ps) {
-		ps.print("()");
-	}
-
 	// EFFECT: Returns the evaluated form of Null; Null is self-evaluating.
 	public Sexpr eval(Environment env) {
 		return this;
