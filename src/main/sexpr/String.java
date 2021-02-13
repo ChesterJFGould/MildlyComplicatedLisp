@@ -34,4 +34,9 @@ public class String extends Sexpr {
 			return false;
 		}
 	}
+
+	// EFFECT: Returns the val stored in this String.
+	public java.lang.String getVal() {
+		return this.val;
+	}
 }

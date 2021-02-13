@@ -1,5 +1,9 @@
 package sexpr;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
 public class PairTest {
 	Pair base;
 	Pair oneTwo;
@@ -8,17 +12,16 @@ public class PairTest {
 	Environment env;
 
 	@BeforeEach
-	void setup() {
+	void setup() throws Exception {
 		this.base = new Pair();
 		this.oneTwo = new Pair(new Int(1), new Int(2));
-		this.oneTwoThree = new Pair(new Int(1), new Pair(new Int(2),
-			new Pair(new Int(3), new Null())));
+		this.oneTwoThree = (Pair) Pair.list(new Int(1), new Int(2), new Int(3));
 		this.addOneTwo = new Pair(new Symbol("+"), new Pair(new Int(1),
 			new Pair(new Int(2), new Null())));
 
 		this.env = new Environment();
 
-		env.put("+", Procedure.newNumericBinaryOperator(
+		env.put("+", Procedure.newNumericBinaryOperator("+",
 			(Long a, Long b) -> new Int(a + b),
 			(Double a, Double b) -> new Float(a + b)));
 	}
@@ -28,8 +31,8 @@ public class PairTest {
 		assertEquals(null, this.base.getCar());
 		assertEquals(null, this.base.getCdr());
 
-		assertEquals(new Int(1), this.oneTwo.getCar());
-		assertEquals(new Int(2), this.oneTwo.getCdr());
+		assertTrue(this.oneTwo.getCar().equals(new Int(1)));
+		assertTrue(this.oneTwo.getCdr().equals(new Int(2)));
 	}
 
 	@Test
@@ -37,20 +40,20 @@ public class PairTest {
 		oneTwo.setCar(new Int(3));
 		oneTwo.setCdr(new Int(4));
 
-		assertEquals(new Int(3), oneTwo.getCar());
-		assertEquals(new Int(4), oneTwo.getCdr());
+		assertTrue(oneTwo.getCar().equals(new Int(3)));
+		assertTrue(oneTwo.getCdr().equals(new Int(4)));
 	}
 
 	@Test
 	void toStringTest() {
-		assertEquals(oneTwo.toString(), "(1 . 2)");
+		assertEquals("(1 . 2)", oneTwo.toString());
 		assertEquals("(1 2 3)", oneTwoThree.toString());
 	}
 
 	@Test
-	void evalTest() {
-		assertEquals(new Int(3), addOneTwo.eval(env));
-		assertThrows(Exception.class, oneTwoThree.eval(env));
+	void evalTest() throws Exception {
+		assertTrue(addOneTwo.eval(env).equals(new Int(3)));
+		assertThrows(Exception.class, () -> oneTwoThree.eval(env));
 	}
 
 	@Test
@@ -60,11 +63,11 @@ public class PairTest {
 	}
 
 	@Test
-	void equals() {
+	void equalsTest() {
 		assertTrue(this.base.equals(this.base));
 		assertFalse(this.base.equals(new Pair()));
 
 		assertTrue(this.oneTwo.equals(this.oneTwo));
-		assertTrue(this.oneTwo.equals(new Pair(new Int(1), new Int(2))));
+		assertFalse(this.oneTwo.equals(new Pair(new Int(1), new Int(2))));
 	}
 }

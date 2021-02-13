@@ -3,7 +3,7 @@ package sexpr;
 import ltreader.CharStream;
 import java.io.PrintStream;
 
-public class Sexpr {
+public abstract class Sexpr {
 	// Write a representation of the Sexpr to ps.
 	public void write(PrintStream ps) {
 		ps.print(this.toString());
@@ -44,7 +44,8 @@ public class Sexpr {
 
 	// EFFECT: Return an atom (Symbol, Int, Float) read from cs.
 	private static Sexpr readAtom(CharStream cs) throws Exception {
-		java.lang.String atom = cs.readUntil(c -> Character.isWhitespace(c) || "()\"".contains(Character.toString(c)));
+		java.lang.String atom = cs.readUntil(
+				c -> Character.isWhitespace(c) || "()\"".contains(Character.toString(c)));
 		if (atom.matches("[\\-\\+]?\\d+")) {
 			return new Int(atom);
 		} else if (atom.matches("[\\-\\+]?\\d+\\.\\d*")) {
@@ -65,11 +66,9 @@ public class Sexpr {
 
 			if (cs.peek() == '\\') {
 				cs.next();
-				acc += "\\" + Character.toString(cs.next());
+				acc += Character.toString(cs.next());
 			} else if (cs.peek() == '"') {
 				break;
-			} else {
-				acc += cs.next();
 			}
 		}
 

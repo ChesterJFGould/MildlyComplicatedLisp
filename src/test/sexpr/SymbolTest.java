@@ -1,5 +1,9 @@
 package sexpr;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
 public class SymbolTest {
 	Symbol a;
 	Symbol b;
@@ -19,14 +23,15 @@ public class SymbolTest {
 
 	@Test
 	void constructorTest() {
-		assertEquals(symbol.getVal(), "symbol");
+		assertEquals(a.getVal(), "a");
+		assertEquals(b.getVal(), "b");
 	}
 
 	@Test
-	void evalTest() {
-		assertEquals(this.a.eval(env), new Int(10));
-		assertEquals(this.b.eval(env), new Int(20));
-		assertThrows(this.c.eval(env), Exception.class);
+	void evalTest() throws Exception {
+		assertTrue(this.a.eval(env).equals(new Int(10)));
+		assertTrue(this.b.eval(env).equals(new Int(20)));
+		assertThrows(Exception.class, () -> this.c.eval(env));
 	}
 
 	@Test

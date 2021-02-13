@@ -1,5 +1,9 @@
 package sexpr;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
 public class IntTest {
 	Int ten;
 	Int nTen;
@@ -10,7 +14,7 @@ public class IntTest {
 	void setup() {
 		this.ten = new Int(10);
 		this.nTen = new Int(-10);
-		this.zero = new Int(0);
+		this.zero = new Int("0");
 
 		this.env = new Environment();
 	}
@@ -56,5 +60,7 @@ public class IntTest {
 		assertTrue(this.zero.equals(new Int(0)));
 		assertFalse(this.zero.equals(this.ten));
 		assertFalse(this.zero.equals(this.nTen));
+
+		assertFalse(this.zero.equals(new Null()));
 	}
 }

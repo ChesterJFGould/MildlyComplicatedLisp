@@ -13,6 +13,16 @@ public class Pair extends Sexpr {
 		this.cdr = cdr;
 	}
 
+	public static Sexpr list(Sexpr... exprs) {
+		Sexpr head = new Null();
+
+		for (int i = exprs.length - 1; i >= 0; i--) {
+			head = new Pair(exprs[i], head);
+		}
+
+		return head;
+	}
+
 	// EFFECT: Returns the Sexpr contained in the car.
 	public Sexpr getCar() {
 		return this.car;

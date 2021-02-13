@@ -35,7 +35,7 @@ public class Procedure extends Sexpr {
 				pair.setCar(((Pair)args).getCar().eval(env));
 				args = ((Pair)args).getCdr();
 
-				while (!(args instanceof Null)) {
+				while (args.type() != Type.Null) {
 					pair.setCdr(new Pair());
 					pair = (Pair)pair.getCdr();
 					pair.setCar(((Pair)args).getCar().eval(env));
@@ -167,7 +167,7 @@ public class Procedure extends Sexpr {
 
 	// Represents a method signature. Used to verify that the given arguments
 	// match what the handler wants.
-	private class Signature {
+	public static class Signature {
 		private List<java.lang.String> args;
 		private java.lang.String vararg;
 
