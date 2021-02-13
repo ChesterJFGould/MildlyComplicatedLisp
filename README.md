@@ -3,7 +3,31 @@
 A simple language based on Scheme that is meant to fix how Scheme deals with
 block structure and be easier to implement and compile.
 
+## Q&A
+Q: What does this application do?
+
+A: Currently this application implements a REPL(Read Eval Print Loop) for a
+programming based on Scheme.
+
+Q: Who will use it?
+
+A: Anyone who is interested in language design. The code that implements the
+s-expression types and eval methods comes in at just under 600 lines of code
+(at the time of writing). This makes it easy to modify or read to gain a deeper
+understanding of how languages are implemented. Also the code that is not in the
+ui package really implements a language for writing lisps in and then the ui package
+uses this language to provide a definition of Simple Lisp. This makes this project
+a nice way of quickly implementing a new language design.
+
+Q: Why is this project interesting to me?
+
+A: For the past year I have been fascinated by the design and implementation of
+programming languages. The language I have implemented here is very similar to
+the language I am writing a compiler for at the moment and so it is interesting
+to see it come to life in an interpreter.
+
 ## Language
+An overview of the language presented as a REPL session.
 ### Numeric Operators
 ```
 > (+ 1 1)
