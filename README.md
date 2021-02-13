@@ -177,7 +177,7 @@ false
 > to-do
 ("Create a to-do list")
 ```
-+ As a user, I want to compute 10!
++ As a user, I want to compute 10!.
 ```scheme
 > (def !
        (lambda (n)
