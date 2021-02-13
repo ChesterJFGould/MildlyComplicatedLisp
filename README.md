@@ -182,6 +182,19 @@ false
 > (succ 2)
 3
 ```
++ As a user, I want to add a lazy form to the language.
+```scheme
+> (def list (lambda a a))
+()
+> (def lazy (macro (arg) (list 'lambda () arg)))
+()
+> (def force (lambda (f) (f)))
+()
+> (def lazy-ten (lazy 10))
+()
+> (force lazy-ten)
+10
+```
 + As a user, I want to use `define` instead of `def` to define variables so my Scheme
 syntax highlighter will highlight my define forms.
 ```scheme
