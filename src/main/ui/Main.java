@@ -172,6 +172,32 @@ public class Main {
         }));
     }
 
+    public static void initMacroForm(Environment env) throws sexpr.Exception {
+        env.put("macro", new Procedure("arguments body", (Environment lamEnv, Sexpr lamArgs) -> {
+            Sexpr funVars = ((Pair) lamArgs).getCar();
+            lamArgs = ((Pair) lamArgs).getCdr();
+            Sexpr body = ((Pair) lamArgs).getCar();
+            return new Procedure(funVars, (Environment outerEnv, Sexpr funArgs) -> {
+                Environment funEnv = new Environment(lamEnv);
+                Sexpr arguments = funVars;
+
+                while (arguments.type() != Type.Null) {
+                    if (arguments instanceof Symbol) {
+                        funEnv.put(((Symbol) arguments).getVal(), funArgs);
+                        break;
+                    } else {
+                        funEnv.put(((Symbol) ((Pair) arguments).getCar()).getVal(),
+                                ((Pair) funArgs).getCar());
+                        funArgs = ((Pair) funArgs).getCdr();
+                        arguments = ((Pair) arguments).getCdr();
+                    }
+                }
+
+                return body.eval(funEnv).eval(outerEnv);
+            });
+        }));
+    }
+
     public static void initQuoteForm(Environment env) throws sexpr.Exception {
         env.put("quote", new Procedure("obj", (Environment ignored, Sexpr args) -> {
             return ((Pair) args).getCar();
@@ -206,6 +232,7 @@ public class Main {
         initPairSetOperators(env);
         initIfForm(env);
         initLambdaForm(env);
+        initMacroForm(env);
         initQuoteForm(env);
         initBeginForm(env);
     }
