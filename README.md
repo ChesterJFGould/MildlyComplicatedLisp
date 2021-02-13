@@ -4,7 +4,8 @@ A simple language based on Scheme that is meant to fix how Scheme deals with
 block structure and be easier to implement and compile.
 
 ## Table of Contents
-+ [Q&A](#Q&A)
++ [Q&A](#QA)
++ [Language](#Language)
 + [User Stories](#User-Stories)
 
 ## Q&A
