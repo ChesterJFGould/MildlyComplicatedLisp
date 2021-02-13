@@ -3,6 +3,10 @@
 A simple language based on Scheme that is meant to fix how Scheme deals with
 block structure and be easier to implement and compile.
 
+## Table of Contents
++ [Q&A](#QandA)
++ [User Stories](#User-Stories)
+
 ## Q&A
 Q: What does this application do?
 
