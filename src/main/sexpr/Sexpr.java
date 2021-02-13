@@ -88,10 +88,8 @@ public abstract class Sexpr {
             return new Null();
         }
 
-        Pair head = new Pair();
+        Pair head = new Pair(Sexpr.read(cs), new Null());
         Pair pair = head;
-
-        pair.setCar(Sexpr.read(cs));
         cs.eatWhitespace();
 
         while (/*(*/!".)".contains(cs.peeks())) {

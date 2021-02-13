@@ -3,6 +3,7 @@ package ltreader;
 import java.io.InputStream;
 import java.io.IOException;
 import java.util.function.Predicate;
+import java.io.ByteArrayInputStream;
 
 public class CharStream {
     private InputStream inStream;
@@ -13,6 +14,10 @@ public class CharStream {
         this.done = false;
         this.inStream = inStream;
         this.next();
+    }
+
+    public CharStream(String s) {
+        this(new ByteArrayInputStream(s.getBytes()));
     }
 
     // MODIFIES: this.

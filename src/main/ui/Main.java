@@ -33,13 +33,12 @@ public class Main {
         System.out.println("");
     }
 
-    // EFFECTS: Adds the base Simple Lisp constructs to env.
-    public static void initSimpleLisp(Environment env) throws sexpr.Exception {
-        // Bools
+    public static void initBools(Environment env) {
         env.put("true", new Bool(true));
         env.put("false", new Bool(false));
+    }
 
-        // Numeric operators.
+    public static void initNumericOperators(Environment env) throws sexpr.Exception {
         env.put("+", Procedure.newNumericBinaryOperator("+", (Long a, Long b) -> new Int(a + b),
                 (Double a, Double b) -> new sexpr.Float(a + b)));
         env.put("-", Procedure.newNumericBinaryOperator("-", (Long a, Long b) -> new Int(a - b),
@@ -48,7 +47,9 @@ public class Main {
                 (Double a, Double b) -> new sexpr.Float(a * b)));
         env.put("/", Procedure.newNumericBinaryOperator("/", (Long a, Long b) -> new Int(a / b),
                 (Double a, Double b) -> new sexpr.Float(a / b)));
-        // Numeric predicates.
+    }
+
+    public static void initNumericPredicates(Environment env) throws sexpr.Exception {
         env.put("<", Procedure.newNumericBinaryOperator("<", (Long a, Long b) -> new Bool(a < b),
                 (Double a, Double b) -> new Bool(a < b)));
         env.put(">", Procedure.newNumericBinaryOperator(">", (Long a, Long b) -> new Bool(a > b),
@@ -59,8 +60,9 @@ public class Main {
                 (Double a, Double b) -> new Bool(a <= b)));
         env.put(">=", Procedure.newNumericBinaryOperator(">=", (Long a, Long b) -> new Bool(a >= b),
                 (Double a, Double b) -> new Bool(a >= b)));
+    }
 
-        // Pair operators.
+    public static void initPairOperators(Environment env) throws sexpr.Exception {
         env.put("cons", Procedure.newBinaryOperator((Sexpr a, Sexpr b) -> {
             Pair pair = new Pair();
             pair.setCar(a);
@@ -70,8 +72,9 @@ public class Main {
         }));
         env.put("car", Procedure.newPairUnaryOperator("car", (Pair pair) -> pair.getCar()));
         env.put("cdr", Procedure.newPairUnaryOperator("car", (Pair pair) -> pair.getCdr()));
+    }
 
-        // Type predicates.
+    public static void initTypePredicates(Environment env) throws sexpr.Exception {
         env.put("float?", Procedure.newTypePredicate(Type.Int));
         env.put("int?", Procedure.newTypePredicate(Type.Int));
         env.put("null?", Procedure.newTypePredicate(Type.Null));
@@ -80,11 +83,9 @@ public class Main {
         env.put("symbol?", Procedure.newTypePredicate(Type.Symbol));
         env.put("bool?", Procedure.newTypePredicate(Type.Bool));
         env.put("procedure?", Procedure.newTypePredicate(Type.Procedure));
+    }
 
-        // Simple equality predicate.
-        env.put("eq?", Procedure.newBinaryOperator((Sexpr a, Sexpr b) -> new Bool(a.equals(b))));
-
-        // Definition form.
+    public static void initDefForm(Environment env) throws sexpr.Exception {
         env.put("def", new Procedure("var val", (Environment defEnv, Sexpr defArgs) -> {
             Sexpr var = ((Pair) defArgs).getCar();
             if (var.type() != Type.Symbol) {
@@ -97,8 +98,9 @@ public class Main {
 
             return new Null();
         }));
+    }
 
-        // Set form.
+    public static void initSetForm(Environment env) throws sexpr.Exception {
         env.put("set!", new Procedure("var val", (Environment defEnv, Sexpr defArgs) -> {
             Sexpr var = ((Pair) defArgs).getCar();
             if (var.type() != Type.Symbol) {
@@ -114,8 +116,13 @@ public class Main {
 
             return new Null();
         }));
+    }
 
-        // Pair set forms.
+    public static void initSimpleEquality(Environment env) throws sexpr.Exception {
+        env.put("eq?", Procedure.newBinaryOperator((Sexpr a, Sexpr b) -> new Bool(a.equals(b))));
+    }
+
+    public static void initPairSetOperators(Environment env) throws sexpr.Exception {
         env.put("set-car!", Procedure.newPairSetter("set-car!", (Pair pair, Sexpr val) -> {
             pair.setCar(val);
             return new Null();
@@ -124,8 +131,9 @@ public class Main {
             pair.setCdr(val);
             return new Null();
         }));
+    }
 
-        // If form.
+    public static void initIfForm(Environment env) throws sexpr.Exception {
         env.put("if", new Procedure("predicate consequence alternative", (Environment ifEnv, Sexpr ifArgs) -> {
             Sexpr pred = ((Pair) ifArgs).getCar().eval(ifEnv);
             ifArgs = ((Pair) ifArgs).getCdr();
@@ -136,8 +144,9 @@ public class Main {
                 return ((Pair) ifArgs).getCar().eval(ifEnv);
             }
         }));
+    }
 
-        // Lambda form.
+    public static void initLambdaForm(Environment env) throws sexpr.Exception {
         env.put("lambda", new Procedure("arguments body", (Environment lamEnv, Sexpr lamArgs) -> {
             Sexpr funVars = ((Pair) lamArgs).getCar();
             lamArgs = ((Pair) lamArgs).getCdr();
@@ -161,13 +170,15 @@ public class Main {
                 return body.eval(funEnv);
             }));
         }));
+    }
 
-        // Quote form.
+    public static void initQuoteForm(Environment env) throws sexpr.Exception {
         env.put("quote", new Procedure("obj", (Environment ignored, Sexpr args) -> {
             return ((Pair) args).getCar();
         }));
+    }
 
-        // Begin form
+    public static void initBeginForm(Environment env) throws sexpr.Exception {
         env.put("begin", new Procedure(". exprs", (Environment beginEnv, Sexpr args) -> {
             beginEnv = new Environment(env);
 
@@ -180,5 +191,22 @@ public class Main {
 
             return ret;
         }));
+    }
+
+    // EFFECTS: Adds the base Simple Lisp constructs to env.
+    public static void initSimpleLisp(Environment env) throws sexpr.Exception {
+        initBools(env);
+        initNumericOperators(env);
+        initNumericPredicates(env);
+        initPairOperators(env);
+        initTypePredicates(env);
+        initSimpleEquality(env);
+        initDefForm(env);
+        initSetForm(env);
+        initPairSetOperators(env);
+        initIfForm(env);
+        initLambdaForm(env);
+        initQuoteForm(env);
+        initBeginForm(env);
     }
 }
