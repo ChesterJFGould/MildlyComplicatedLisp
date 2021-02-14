@@ -3,6 +3,11 @@
 A simple language based on Scheme that is meant to fix how Scheme deals with
 block structure and be easier to implement and compile.
 
+## Table of Contents
++ [Q&A](#QA)
++ [Language](#Language)
++ [User Stories](#User-Stories)
+
 ## Q&A
 Q: What does this application do?
 
@@ -150,6 +155,18 @@ true
 > (eq? (cons 1 2) (cons 1 2))
 false
 ```
+### Macros
+```scheme
+> (def list (lambda a a))
+()
+> (def defun
+       (macro (args body)
+              (list 'def (car args) (list 'lambda (cdr args) body))))
+> (defun (add a b) (+ a b))
+()
+> (add 1 2)
+3
+```
 ## User Stories
 + As a user, I want to be able to create a to-do list and then add a task to it.
 ```scheme
@@ -160,7 +177,7 @@ false
 > to-do
 ("Create a to-do list")
 ```
-+ As a user, I want to compute 10!
++ As a user, I want to compute 10!.
 ```scheme
 > (def !
        (lambda (n)
@@ -181,6 +198,19 @@ false
 ()
 > (succ 2)
 3
+```
++ As a user, I want to add a lazy form to the language.
+```scheme
+> (def list (lambda a a))
+()
+> (def lazy (macro (arg) (list 'lambda () arg)))
+()
+> (def force (lambda (f) (f)))
+()
+> (def lazy-ten (lazy 10))
+()
+> (force lazy-ten)
+10
 ```
 + As a user, I want to use `define` instead of `def` to define variables so my Scheme
 syntax highlighter will highlight my define forms.
