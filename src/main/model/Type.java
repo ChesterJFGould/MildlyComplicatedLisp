@@ -1,4 +1,4 @@
-package sexpr;
+package model;
 
 // Represents the type of an s-expression.
 public enum Type {

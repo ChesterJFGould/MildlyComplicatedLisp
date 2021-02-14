@@ -1,4 +1,4 @@
-package sexpr;
+package model;
 
 import java.util.HashMap;
 

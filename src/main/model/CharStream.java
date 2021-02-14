@@ -1,4 +1,4 @@
-package ltreader;
+package model;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -18,7 +18,7 @@ public class CharStream {
         this.next();
     }
 
-    public CharStream(String s) {
+    public CharStream(java.lang.String s) {
         this(new ByteArrayInputStream(s.getBytes()));
     }
 
@@ -47,14 +47,14 @@ public class CharStream {
     }
 
     // EFFECT: Returns current converted to a string.
-    public String peeks() {
+    public java.lang.String peeks() {
         return Character.toString(this.current);
     }
 
     // MODIFIES: this.
     // EFFECT: Returns all the characters until delimPred returns true.
-    public String readUntil(Predicate<Character> delimPred) {
-        String acc = "";
+    public java.lang.String readUntil(Predicate<Character> delimPred) {
+        java.lang.String acc = "";
 
         for (char c = this.peek(); !this.done() && !delimPred.test(c); c = this.peek()) {
             acc += Character.toString(c);
@@ -74,9 +74,9 @@ public class CharStream {
 
     // MODIFIES: this.
     // EFFECT: If the next char isn't equal to c throws an exception.
-    public void expect(char c) throws sexpr.Exception {
+    public void expect(char c) throws Exception {
         if (this.peek() != c) {
-            throw new sexpr.Exception("Expected %c but instead found %c", c, this.peek());
+            throw new Exception("Expected %c but instead found %c", c, this.peek());
         }
         this.next();
     }

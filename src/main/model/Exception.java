@@ -1,4 +1,4 @@
-package sexpr;
+package model;
 
 // Just a nice wrapper so I don't have to write new Exception(String.format(...)).
 public class Exception extends java.lang.Exception {
