@@ -2,6 +2,7 @@ package sexpr;
 
 import java.util.HashMap;
 
+// Represents the environment an s-expression is evaluated in.
 public class Environment {
     private HashMap<java.lang.String, Sexpr> vars;
     private Environment parent;

@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.function.Predicate;
 import java.io.ByteArrayInputStream;
 
+// Represents a stream of chars. Contains some nice methods to make parsing
+// easier (eatWhitespace, readUntil, etc.).
 public class CharStream {
     private InputStream inStream;
     private char current;

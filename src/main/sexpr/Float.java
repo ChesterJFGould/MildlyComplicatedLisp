@@ -2,6 +2,7 @@ package sexpr;
 
 import java.io.PrintStream;
 
+// Represents a floating point number s-expression.
 public class Float extends Sexpr {
     private double val;
 

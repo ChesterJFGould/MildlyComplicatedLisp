@@ -2,6 +2,7 @@ package sexpr;
 
 import java.io.PrintStream;
 
+// Represents a boolean s-expession
 public class Bool extends Sexpr {
     private boolean val;
 

@@ -2,6 +2,7 @@ package sexpr;
 
 import java.io.PrintStream;
 
+// Represents a string s-expression.
 public class String extends Sexpr {
     private java.lang.String val;
 

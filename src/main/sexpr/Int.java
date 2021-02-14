@@ -2,6 +2,7 @@ package sexpr;
 
 import java.io.PrintStream;
 
+// Represents an integer s-expression.
 public class Int extends Sexpr {
     private long val;
 

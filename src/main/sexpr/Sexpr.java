@@ -4,6 +4,9 @@ import ltreader.CharStream;
 
 import java.io.PrintStream;
 
+// The parent class of all s-expressions.
+// Also contains the code to read a new s-expression from a CharStream because
+// it seemed appropriate.
 public abstract class Sexpr {
     // Write a representation of the Sexpr to ps.
     public void write(PrintStream ps) {

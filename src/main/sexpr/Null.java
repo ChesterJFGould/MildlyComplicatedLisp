@@ -2,6 +2,7 @@ package sexpr;
 
 import java.io.PrintStream;
 
+// Represents the null (a.k.a. empty list, unit) s-expression.
 public class Null extends Sexpr {
     public Null() {
     }

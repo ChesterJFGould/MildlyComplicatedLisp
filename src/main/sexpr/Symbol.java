@@ -2,6 +2,7 @@ package sexpr;
 
 import java.io.PrintStream;
 
+// Represents a symbol s-expression.
 public class Symbol extends Sexpr {
     private java.lang.String val;
 

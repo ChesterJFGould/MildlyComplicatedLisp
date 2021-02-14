@@ -2,6 +2,8 @@ package sexpr;
 
 import java.io.PrintStream;
 
+// Represents a cons cell s-expression, the basic (and only) way of creating
+// compound data.
 public class Pair extends Sexpr {
     private Sexpr car;
     private Sexpr cdr;

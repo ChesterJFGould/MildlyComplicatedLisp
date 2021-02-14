@@ -6,6 +6,10 @@ import java.util.ArrayList;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+// Represents the generalized version of a procedure s-expression.
+// Generalized in the sense that arguments are not necessarily evaluated when
+// passed to the procedure.
+// All special forms, macros, and lambdas are a Procedure.
 public class Procedure extends Sexpr {
     private Signature signature;
     private Handler handler;
