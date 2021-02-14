@@ -168,6 +168,20 @@ false
 3
 ```
 ## User Stories
++ As a user, I want to be able to `cons` mulitple elements onto a list.
+```scheme
+> (def append (lambda (lst1 lst2)
+                      (if (null? lst1)
+                          lst2
+                          (cons (car lst1)
+                                (append (cdr lst1) lst2)))))
+()
+> (def multi-cons (lambda (lst . vals)
+                          (append vals lst)))
+()
+> (multi-cons '(4 5 6) 1 2 3)
+(1 2 3 4 5 6)
+```
 + As a user, I want to be able to create a to-do list and then add a task to it.
 ```scheme
 > (def to-do ())
