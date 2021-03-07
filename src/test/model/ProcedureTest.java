@@ -88,6 +88,8 @@ public class ProcedureTest {
 
             assertThrows(Exception.class, () -> Procedure.Signature.fromJson(new Null().toJson()));
             assertThrows(Exception.class, () -> Procedure.Signature.fromJson(new JSONObject("{\"args\":[\"a\", 10],\"type\":\"signature\"}")));
+            assertThrows(Exception.class, () -> Procedure.Signature.fromJson(new JSONObject("{}")));
+            assertThrows(Exception.class, () -> Procedure.Signature.fromJson(new JSONObject("{\"type\":\"signature\"}")));
         }
     }
 
@@ -253,5 +255,7 @@ public class ProcedureTest {
 
         assertThrows(Exception.class, () -> Procedure.fromJson(new Null().toJson()));
         assertThrows(Exception.class, () -> Procedure.fromJson(new JSONObject("{\"name\":\"a\",\"type\":\"procedure\"}")));
+        assertThrows(Exception.class, () -> Procedure.fromJson(new JSONObject("{}")));
+        assertThrows(Exception.class, () -> Procedure.fromJson(new JSONObject("{\"type\":\"procedure\"}")));
     }
 }

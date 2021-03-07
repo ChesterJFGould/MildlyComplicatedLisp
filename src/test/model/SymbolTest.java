@@ -2,7 +2,7 @@ package model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import org.json.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class SymbolTest {
@@ -62,5 +62,7 @@ public class SymbolTest {
         assertEquals(this.c.toJson().toString(), Symbol.fromJson(this.c.toJson()).toJson().toString());
 
         assertThrows(Exception.class, () -> Symbol.fromJson(new Null().toJson()));
+	assertThrows(Exception.class, () -> Symbol.fromJson(new JSONObject("{}")));
+        assertThrows(Exception.class, () -> Symbol.fromJson(new JSONObject("{\"type\":\"symbol\"}")));
     }
 }

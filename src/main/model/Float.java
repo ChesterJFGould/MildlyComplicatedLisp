@@ -52,7 +52,7 @@ public class Float extends Sexpr {
     }
 
     public static Float fromJson(JSONObject obj) throws Exception {
-        if (obj.has("type") & obj.getString("type").equals("float") & obj.has("value")) {
+        if (obj.has("type") && obj.getString("type").equals("float") && obj.has("value")) {
             return new Float(obj.getDouble("value"));
         } else {
             throw new Exception("cannot parse Float from %s", obj);

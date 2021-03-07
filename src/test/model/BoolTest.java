@@ -76,6 +76,8 @@ public class BoolTest {
         JSONObject fJSON = f.toJson();
         assertTrue(f.equals(Bool.fromJson(fJSON)));
 
-        assertThrows(Exception.class, () -> Bool.fromJson(new JSONObject().put("a", "b")));
+        assertThrows(Exception.class, () -> Bool.fromJson(new Null().toJson()));
+        assertThrows(Exception.class, () -> Bool.fromJson(new JSONObject("{}")));
+        assertThrows(Exception.class, () -> Bool.fromJson(new JSONObject("{\"type\":\"boolean\"}")));
     }
 }

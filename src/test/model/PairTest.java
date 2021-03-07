@@ -2,7 +2,7 @@ package model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import org.json.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PairTest {
@@ -84,5 +84,7 @@ public class PairTest {
         assertEquals(this.oneTwoThree.toJson().toString(), Pair.fromJson(new Environment(), this.oneTwoThree.toJson()).toJson().toString());
 
         assertThrows(Exception.class, () -> Pair.fromJson(new Environment(), new Null().toJson()));
+        assertThrows(Exception.class, () -> Pair.fromJson(new Environment(), new JSONObject("{}")));
+        assertThrows(Exception.class, () -> Pair.fromJson(new Environment(), new JSONObject("{\"type\":\"pair\"}")));
     }
 }

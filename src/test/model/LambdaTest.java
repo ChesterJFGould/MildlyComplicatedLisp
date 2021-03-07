@@ -2,7 +2,7 @@ package model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import org.json.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class LambdaTest {
@@ -33,5 +33,7 @@ public class LambdaTest {
         assertEquals(this.id2.toJson().toString(), Lambda.fromJson(new Environment(), this.id2.toJson()).toJson().toString());
 
         assertThrows(Exception.class, () -> Lambda.fromJson(new Environment(), new Null().toJson()));
+        assertThrows(Exception.class, () -> Lambda.fromJson(new JSONObject("{}")));
+        assertThrows(Exception.class, () -> Lambda.fromJson(new JSONObject("{\"type\":\"lambda\"}")));
     }
 }

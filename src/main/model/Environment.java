@@ -103,6 +103,8 @@ public class Environment {
             if (var instanceof JSONObject) {
                 vars.put(((JSONObject) var).getString("key"),
                          Sexpr.fromJson(env, ((JSONObject) var).getJSONObject("value")));
+            } else {
+		throw new Exception("cannot parse Environment from %s", obj);
             }
         }
 

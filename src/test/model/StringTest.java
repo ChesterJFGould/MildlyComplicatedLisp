@@ -2,7 +2,7 @@ package model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import org.json.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class StringTest {
@@ -60,5 +60,7 @@ public class StringTest {
         assertEquals(this.sl.toJson().toString(), String.fromJson(this.sl.toJson()).toJson().toString());
 
         assertThrows(Exception.class, () -> String.fromJson(new Null().toJson()));
+        assertThrows(Exception.class, () -> String.fromJson(new JSONObject("{}")));
+        assertThrows(Exception.class, () -> String.fromJson(new JSONObject("{\"type\":\"string\"}")));
     }
 }

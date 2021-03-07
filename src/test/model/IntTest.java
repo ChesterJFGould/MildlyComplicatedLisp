@@ -2,7 +2,7 @@ package model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import org.json.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class IntTest {
@@ -79,5 +79,7 @@ public class IntTest {
         assertEquals(this.zero.toJson().toString(), Int.fromJson(this.zero.toJson()).toJson().toString());
 
         assertThrows(Exception.class, () -> Int.fromJson(new Null().toJson()));
+        assertThrows(Exception.class, () -> Int.fromJson(new JSONObject("{}")));
+        assertThrows(Exception.class, () -> Int.fromJson(new JSONObject("{\"type\":\"integer\"}")));
     }
 }

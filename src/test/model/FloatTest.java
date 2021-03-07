@@ -2,7 +2,7 @@ package model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import org.json.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class FloatTest {
@@ -71,5 +71,7 @@ public class FloatTest {
         assertEquals(this.zero.toJson().toString(), Float.fromJson(this.zero.toJson()).toJson().toString());
 
         assertThrows(Exception.class, () -> Float.fromJson(new Null().toJson()));
+        assertThrows(Exception.class, () -> Float.fromJson(new JSONObject("{}")));
+        assertThrows(Exception.class, () -> Float.fromJson(new JSONObject("{\"type\":\"float\"}")));
     }
 }

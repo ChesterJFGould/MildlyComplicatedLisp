@@ -33,6 +33,8 @@ public class SexprTest {
 
         CharStream nullCs = new CharStream("()");
         assertEquals(Type.Null, Sexpr.read(nullCs).type());
+
+        assertThrows(Exception.class, () -> Sexpr.read(new CharStream("\"test")));
     }
 
     @Test

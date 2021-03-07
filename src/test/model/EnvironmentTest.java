@@ -3,7 +3,7 @@ package model;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.json.*;
-
+import org.json.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class EnvironmentTest {
@@ -53,6 +53,14 @@ public class EnvironmentTest {
     }
 
     @Test
+    void mergeNonParentTest() {
+	this.c.merge(this.a);
+
+	assertTrue(this.c.get("a").equals(new Symbol("a")));
+	assertTrue(this.c.get("c").equals(new Symbol("c")));
+    }
+
+    @Test
     void toJsonTest() {
         JSONObject aJSON = this.a.toJson();
         assertTrue(aJSON.has("type"));
@@ -60,7 +68,10 @@ public class EnvironmentTest {
         assertTrue(aJSON.has("vars"));
         assertEquals(new JSONArray().put(new JSONObject().put("key", "a").put("value", new Symbol("a").toJson())).toString(), aJSON.getJSONArray("vars").toString());
 
-        assertEquals("{\"parent\":{\"vars\":[{\"value\":{\"type\":\"symbol\",\"value\":\"c\"},\"key\":\"c\"}],\"type\":\"environment\"},\"vars\":[{\"value\":{\"type\":\"symbol\",\"value\":\"d\"},\"key\":\"d\"}],\"type\":\"environment\"}", d.toJson().toString());
+        assertEquals("{\"parent\":{\"vars\":[{\"value\":{\"type\":\"symbol\",\"value\":\"c\"},"
+                     + "\"key\":\"c\"}],\"type\":\"environment\"},\"vars\":"
+                     + "[{\"value\":{\"type\":\"symbol\",\"value\":\"d\"},\"key\":\"d\"}],\"type\":\"environment\"}",
+                     d.toJson().toString());
     }
 
     @Test
@@ -70,5 +81,8 @@ public class EnvironmentTest {
         assertEquals(d.toJson().toString(), Environment.fromJson(d.toJson()).toJson().toString());
 
         assertThrows(Exception.class, () -> Environment.fromJson(new Null().toJson()));
+
+	assertThrows(Exception.class, () -> Environment.fromJson(new JSONObject("{}")));
+	assertThrows(Exception.class, () -> Environment.fromJson(new JSONObject("{\"type\":\"environment\",\"vars\":[1]}")));
     }
 }
