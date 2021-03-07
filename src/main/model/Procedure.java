@@ -5,18 +5,35 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.HashMap;
+
+import org.json.*;
 
 // Represents the generalized version of a procedure s-expression.
 // Generalized in the sense that arguments are not necessarily evaluated when
 // passed to the procedure.
 // All special forms, macros, and lambdas are a Procedure.
 public class Procedure extends Sexpr {
-    private Signature signature;
+    protected Signature signature;
     private Handler handler;
+    private java.lang.String name;
 
-    public Procedure(java.lang.String signature, Handler handler) throws Exception {
+    private static HashMap<java.lang.String, Procedure> procedures = new HashMap<>();
+
+    public Procedure(java.lang.String name, java.lang.String signature, Handler handler) throws Exception {
         this.signature = new Signature(signature);
         this.handler = handler;
+        this.name = name;
+
+        procedures.put(name, this);
+    }
+
+    public Procedure(java.lang.String name, Sexpr signature, Handler handler) throws Exception {
+        this.signature = new Signature(signature);
+        this.handler = handler;
+        this.name = name;
+
+        procedures.put(name, this);
     }
 
     public Procedure(Sexpr signature, Handler handler) throws Exception {
@@ -24,8 +41,17 @@ public class Procedure extends Sexpr {
         this.handler = handler;
     }
 
+    public Procedure(Signature signature, Handler handler) {
+        this.signature = signature;
+        this.handler = handler;
+    }
+
     public interface Handler {
         public Sexpr handle(Environment env, Sexpr args) throws Exception;
+    }
+
+    public static Procedure getProcedure(java.lang.String name) {
+        return procedures.get(name);
     }
 
     // EFFECT: Returns a handler that evals the given arguments before passing them
@@ -59,7 +85,7 @@ public class Procedure extends Sexpr {
     // the same numeric type, or are not numeric at all, throw an exception.
     public static Procedure newNumericBinaryOperator(java.lang.String name, BiFunction<Long, Long, Sexpr> intOp,
                                                      BiFunction<Double, Double, Sexpr> floatOp) throws Exception {
-        return new Procedure("a b", Procedure.evalWrapper((Environment env, Sexpr args) -> {
+        return new Procedure(name, "a b", Procedure.evalWrapper((Environment env, Sexpr args) -> {
             Sexpr a = ((Pair) args).getCar();
             args = ((Pair) args).getCdr();
             Sexpr b = ((Pair) args).getCar();
@@ -84,8 +110,9 @@ public class Procedure extends Sexpr {
 
     // EFFECT: Returns a Procedure that takes in two arguments. The procedure
     // returns the result of applying op to these two arguments.
-    public static Procedure newBinaryOperator(BiFunction<Sexpr, Sexpr, Sexpr> op) throws Exception {
-        return new Procedure("a b", Procedure.evalWrapper((Environment env, Sexpr args) -> {
+    public static Procedure newBinaryOperator(java.lang.String name, BiFunction<Sexpr, Sexpr, Sexpr> op)
+            throws Exception {
+        return new Procedure(name, "a b", Procedure.evalWrapper((Environment env, Sexpr args) -> {
             Sexpr a = ((Pair) args).getCar();
             args = ((Pair) args).getCdr();
             Sexpr b = ((Pair) args).getCar();
@@ -96,8 +123,8 @@ public class Procedure extends Sexpr {
 
     // EFFECT: Returns a Procedure that takes in an argument. This procedure return
     // true if the argument of type, else false.
-    public static Procedure newTypePredicate(Type type) throws Exception {
-        return new Procedure("obj", Procedure.evalWrapper((Environment env, Sexpr args) -> {
+    public static Procedure newTypePredicate(java.lang.String name, Type type) throws Exception {
+        return new Procedure(name, "obj", Procedure.evalWrapper((Environment env, Sexpr args) -> {
             Sexpr obj = ((Pair) args).getCar();
 
             return new Bool(obj.type() == type);
@@ -108,7 +135,7 @@ public class Procedure extends Sexpr {
     // a Pair the Procedure returns the result of applying op to it, otherwise it
     // throws an Exception.
     public static Procedure newPairUnaryOperator(java.lang.String name, Function<Pair, Sexpr> op) throws Exception {
-        return new Procedure("pair", Procedure.evalWrapper((Environment env, Sexpr args) -> {
+        return new Procedure(name, "pair", Procedure.evalWrapper((Environment env, Sexpr args) -> {
             Sexpr pair = ((Pair) args).getCar();
 
             if (pair.type() == Type.Pair) {
@@ -123,7 +150,7 @@ public class Procedure extends Sexpr {
     // a pair then throw an exception, else return the result of applying op to the
     // arguments. Meant to be used to implements set-car/cdr, hence the name.
     public static Procedure newPairSetter(java.lang.String name, BiFunction<Pair, Sexpr, Sexpr> op) throws Exception {
-        return new Procedure("pair val", Procedure.evalWrapper((Environment env, Sexpr args) -> {
+        return new Procedure(name, "pair val", Procedure.evalWrapper((Environment env, Sexpr args) -> {
             Sexpr pair = ((Pair) args).getCar();
             if (pair.type() != Type.Pair) {
                 throw new Exception("Invalid arg to %s, %s must be a pair", name, pair.toString());
@@ -169,6 +196,26 @@ public class Procedure extends Sexpr {
         return expr == this;
     }
 
+    public JSONObject toJson() {
+        return new JSONObject()
+                .put("type", "procedure")
+                .put("name", this.name);
+    }
+
+    public static Procedure fromJson(JSONObject obj) throws Exception {
+        if (obj.has("type") && obj.getString("type").equals("procedure") && obj.has("name")) {
+            Procedure proc = Procedure.getProcedure(obj.getString("name"));
+            if (proc == null) {
+                throw new Exception("cannot parse Procedure from %s, no procedure has name %s", obj,
+                        obj.getString("name"));
+            } else {
+                return proc;
+            }
+        } else {
+            throw new Exception("cannot parse Procedure from %s", obj);
+        }
+    }
+
     // Represents a method signature. Used to verify that the given arguments
     // match what the handler wants.
     public static class Signature {
@@ -189,6 +236,11 @@ public class Procedure extends Sexpr {
             this.parse(args);
         }
 
+        public Signature(List<java.lang.String> args, java.lang.String vararg) {
+            this.args = args;
+            this.vararg = vararg;
+        }
+
         // EFFECT: Returns the string representation of this Signature.
         public java.lang.String toString() {
             java.lang.String acc = "(" + java.lang.String.join(" ", this.args);
@@ -197,6 +249,19 @@ public class Procedure extends Sexpr {
             }
 
             return acc + ")";
+        }
+
+        public Sexpr toSexpr() {
+            Sexpr signature = new Null();
+            if (this.vararg != null) {
+                signature = new Symbol(this.vararg);
+            }
+
+            for (int i = this.args.size() - 1; i >= 0; i--) {
+                signature = new Pair(new Symbol(this.args.get(i)), signature);
+            }
+
+            return signature;
         }
 
         // EFFECT: Returns true if args is a list that matches the signature,
@@ -251,6 +316,48 @@ public class Procedure extends Sexpr {
                 } else {
                     this.args.add(vars[i]);
                 }
+            }
+        }
+
+        public JSONObject toJson() {
+            JSONArray args = new JSONArray();
+
+            for (java.lang.String arg : this.args) {
+                args.put(arg);
+            }
+
+            JSONObject obj = new JSONObject()
+                    .put("type", "signature")
+                    .put("args", args);
+
+            if (this.vararg != null) {
+                obj.put("vararg", this.vararg);
+            }
+
+            return obj;
+        }
+
+        public static Signature fromJson(JSONObject obj) throws Exception {
+            if (obj.has("type") && obj.getString("type").equals("signature") && obj.has("args")) {
+                List<java.lang.String> vars = new ArrayList<>();
+
+                for (Object var : obj.getJSONArray("args")) {
+                    if (var instanceof java.lang.String) {
+                        vars.add((java.lang.String) var);
+                    } else {
+                        throw new Exception("cannot parse Signature from %s", obj);
+                    }
+                }
+
+                java.lang.String vararg = null;
+
+                if (obj.has("vararg")) {
+                    vararg = obj.getString("vararg");
+                }
+
+                return new Signature(vars, vararg);
+            } else {
+                throw new Exception("cannot parse Signature from %s", obj);
             }
         }
     }

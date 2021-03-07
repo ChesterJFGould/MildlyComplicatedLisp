@@ -2,6 +2,7 @@ package model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.json.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -50,5 +51,31 @@ public class BoolTest {
         assertTrue(f.equals(new Bool(false)));
         assertFalse(f.equals(t));
         assertFalse(f.equals(new Null()));
+    }
+
+    @Test
+    void toJsonTest() {
+        JSONObject tJSON = t.toJson();
+        assertTrue(tJSON.has("type"));
+        assertEquals("boolean", tJSON.getString("type"));
+        assertTrue(tJSON.has("value"));
+        assertEquals(true, tJSON.getBoolean("value"));
+
+        JSONObject fJSON = f.toJson();
+        assertTrue(fJSON.has("type"));
+        assertEquals("boolean", fJSON.getString("type"));
+        assertTrue(fJSON.has("value"));
+        assertEquals(false, fJSON.getBoolean("value"));
+    }
+
+    @Test
+    void fromJsonTest() throws Exception {
+        JSONObject tJSON = t.toJson();
+        assertTrue(t.equals(Bool.fromJson(tJSON)));
+
+        JSONObject fJSON = f.toJson();
+        assertTrue(f.equals(Bool.fromJson(fJSON)));
+
+        assertThrows(Exception.class, () -> Bool.fromJson(new JSONObject().put("a", "b")));
     }
 }

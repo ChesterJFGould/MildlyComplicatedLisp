@@ -1,8 +1,8 @@
 all:
-	javac */*.java
+	javac -cp ../../lib/json.jar */*.java 
 
 debug:
-	javac */*.java 2>&1 | less
+	javac -cp ../../lib/json.jar */*.java 2>&1 | less
 
 clean:
 	rm */*.class

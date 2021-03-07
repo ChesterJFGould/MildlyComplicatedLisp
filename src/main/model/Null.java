@@ -2,6 +2,8 @@ package model;
 
 import java.io.PrintStream;
 
+import org.json.*;
+
 // Represents the null (a.k.a. empty list, unit) s-expression.
 public class Null extends Sexpr {
     public Null() {
@@ -25,5 +27,18 @@ public class Null extends Sexpr {
     // EFFECT: Returns true of expr is also a Null.
     public boolean equals(Sexpr expr) {
         return expr.type() == Type.Null;
+    }
+
+    public JSONObject toJson() {
+        return new JSONObject()
+                .put("type", "null");
+    }
+
+    public static Null fromJson(JSONObject obj) throws Exception {
+        if (obj.has("type") && obj.getString("type").equals("null")) {
+            return new Null();
+        } else {
+            throw new Exception("cannot parse Null from %s", obj);
+        }
     }
 }

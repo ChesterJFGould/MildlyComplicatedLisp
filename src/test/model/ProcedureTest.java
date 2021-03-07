@@ -2,6 +2,7 @@ package model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.json.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -66,6 +67,28 @@ public class ProcedureTest {
             assertEquals("( . b)", this.dotB.toString());
             assertEquals("(a . b)", this.aDotB.toString());
         }
+
+        @Test
+        void toSexprTest() {
+            assertEquals("()", this.empty.toSexpr().toString());
+            assertEquals("(a)", this.a.toSexpr().toString());
+            assertEquals("(a . b)", this.aDotB.toSexpr().toString());
+        }
+
+        @Test
+        void toJsonTest() {
+            assertEquals("{\"args\":[\"a\",\"b\"],\"type\":\"signature\"}", this.ab.toJson().toString());
+            assertEquals("{\"args\":[\"a\"],\"vararg\":\"b\",\"type\":\"signature\"}", this.aDotB.toJson().toString());
+        }
+
+        @Test
+        void fromJsonTest() throws Exception {
+            assertEquals(this.ab.toJson().toString(), Procedure.Signature.fromJson(this.ab.toJson()).toJson().toString());
+            assertEquals(this.aDotB.toJson().toString(), Procedure.Signature.fromJson(this.aDotB.toJson()).toJson().toString());
+
+            assertThrows(Exception.class, () -> Procedure.Signature.fromJson(new Null().toJson()));
+            assertThrows(Exception.class, () -> Procedure.Signature.fromJson(new JSONObject("{\"args\":[\"a\", 10],\"type\":\"signature\"}")));
+        }
     }
 
     @Test
@@ -124,7 +147,7 @@ public class ProcedureTest {
 
     @Test
     void evalWrapperTest() throws Exception {
-        Procedure ident = new Procedure("a", Procedure.evalWrapper(
+        Procedure ident = new Procedure("test", "a", Procedure.evalWrapper(
                 (Environment env, Sexpr args) -> ((Pair) args).getCar()));
 
         Environment env = new Environment();
@@ -152,7 +175,7 @@ public class ProcedureTest {
 
     @Test
     void binOpTest() throws Exception {
-        Procedure cons = Procedure.newBinaryOperator(
+        Procedure cons = Procedure.newBinaryOperator("test",
                 (Sexpr a, Sexpr b) -> new Pair(a, b));
 
         Environment env = new Environment();
@@ -163,8 +186,8 @@ public class ProcedureTest {
 
     @Test
     void typePredTest() throws Exception {
-        Procedure intTest = Procedure.newTypePredicate(Type.Int);
-        Procedure floatTest = Procedure.newTypePredicate(Type.Float);
+        Procedure intTest = Procedure.newTypePredicate("test", Type.Int);
+        Procedure floatTest = Procedure.newTypePredicate("test", Type.Float);
 
         Environment env = new Environment();
 
@@ -181,7 +204,7 @@ public class ProcedureTest {
                 (Pair p) -> p.getCar());
 
         Environment env = new Environment();
-        env.put("quote", new Procedure("a",
+        env.put("quote", new Procedure("test", "a",
                 (Environment ignored, Sexpr args) -> ((Pair) args).getCar()));
 
         Pair pair = (Pair) Pair.list(new Symbol("quote"), new Pair(new Int(1), new Int(2)));
@@ -198,12 +221,37 @@ public class ProcedureTest {
                 });
 
         Environment env = new Environment();
-        env.put("quote", new Procedure("a",
+        env.put("quote", new Procedure("test", "a",
                 (Environment ignored, Sexpr args) -> ((Pair) args).getCar()));
 
         Pair pair = new Pair(new Int(1), new Int(2));
         setCar.apply(env, Pair.list(Pair.list(new Symbol("quote"), pair), new Float(3)));
         assertTrue(pair.getCar().equals(new Float(3)));
         assertThrows(Exception.class, () -> setCar.apply(env, Pair.list(new Int(10), Pair.list(new Symbol("quote"), pair))));
+    }
+
+    @Test
+    void getProcedureTest() throws Exception {
+        Procedure ident = new Procedure("id", Pair.list(new Symbol("a")),
+                (Environment env, Sexpr args) -> ((Pair) args).getCar().eval(env));
+
+        assertEquals(ident, Procedure.getProcedure("id"));
+    }
+
+    @Test
+    void toJsonTest() throws Exception {
+        Procedure ident = new Procedure("id", Pair.list(new Symbol("a")),
+                (Environment env, Sexpr args) -> ((Pair) args).getCar().eval(env));
+        assertEquals("{\"name\":\"id\",\"type\":\"procedure\"}", ident.toJson().toString());
+    }
+
+    @Test
+    void fromJsonTest() throws Exception {
+        Procedure ident = new Procedure("id", Pair.list(new Symbol("a")),
+                (Environment env, Sexpr args) -> ((Pair) args).getCar().eval(env));
+        assertEquals(ident.toJson().toString(), Procedure.fromJson(ident.toJson()).toJson().toString());
+
+        assertThrows(Exception.class, () -> Procedure.fromJson(new Null().toJson()));
+        assertThrows(Exception.class, () -> Procedure.fromJson(new JSONObject("{\"name\":\"a\",\"type\":\"procedure\"}")));
     }
 }

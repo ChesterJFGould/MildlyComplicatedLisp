@@ -2,6 +2,8 @@ package model;
 
 import java.io.PrintStream;
 
+import org.json.*;
+
 // Represents a string s-expression.
 public class String extends Sexpr {
     private java.lang.String val;
@@ -39,5 +41,19 @@ public class String extends Sexpr {
     // EFFECT: Returns the val stored in this String.
     public java.lang.String getVal() {
         return this.val;
+    }
+
+    public JSONObject toJson() {
+        return new JSONObject()
+                .put("type", "string")
+                .put("value", this.val);
+    }
+
+    public static String fromJson(JSONObject obj) throws Exception {
+        if (obj.has("type") && obj.getString("type").equals("string") && obj.has("value")) {
+            return new String(obj.getString("value"));
+        } else {
+            throw new Exception("cannot parse String from %s", obj);
+        }
     }
 }

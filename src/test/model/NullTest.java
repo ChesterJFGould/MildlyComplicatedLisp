@@ -34,4 +34,16 @@ public class NullTest {
     void evalTest() {
         assertTrue(n.eval(new Environment()).equals(new Null()));
     }
+
+    @Test
+    void toJsonTest() {
+        assertEquals("{\"type\":\"null\"}", n.toJson().toString());
+    }
+
+    @Test
+    void fromJsonTest() throws Exception {
+        assertEquals(n.toJson().toString(), Null.fromJson(n.toJson()).toJson().toString());
+
+        assertThrows(Exception.class, () -> Null.fromJson(new Int(1729).toJson()));
+    }
 }

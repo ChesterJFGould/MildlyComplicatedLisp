@@ -1,6 +1,6 @@
 package model;
 
-import java.io.PrintStream;
+import org.json.*;
 
 // Represents a cons cell s-expression, the basic (and only) way of creating
 // compound data.
@@ -92,5 +92,21 @@ public class Pair extends Sexpr {
     // EFFECT: Returns true if expr is the same object as this.
     public boolean equals(Sexpr expr) {
         return expr == this;
+    }
+
+    public JSONObject toJson() {
+        return new JSONObject()
+                .put("type", "pair")
+                .put("car", this.car.toJson())
+                .put("cdr", this.cdr.toJson());
+    }
+
+    public static Pair fromJson(Environment env, JSONObject obj) throws Exception {
+        if (obj.has("type") && obj.getString("type").equals("pair") && obj.has("car") && obj.has("cdr")) {
+            return new Pair(Sexpr.fromJson(env, obj.getJSONObject("car")),
+                            Sexpr.fromJson(env, obj.getJSONObject("cdr")));
+        } else {
+            throw new Exception("cannot parse Pair from %s", obj);
+        }
     }
 }

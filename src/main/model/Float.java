@@ -2,6 +2,8 @@ package model;
 
 import java.io.PrintStream;
 
+import org.json.*;
+
 // Represents a floating point number s-expression.
 public class Float extends Sexpr {
     private double val;
@@ -40,6 +42,20 @@ public class Float extends Sexpr {
             return ((Float) expr).val == this.val;
         } else {
             return false;
+        }
+    }
+
+    public JSONObject toJson() {
+        return new JSONObject()
+                .put("type", "float")
+                .put("value", this.val);
+    }
+
+    public static Float fromJson(JSONObject obj) throws Exception {
+        if (obj.has("type") && obj.getString("type").equals("float") && obj.has("value")) {
+            return new Float(obj.getDouble("value"));
+        } else {
+            throw new Exception("cannot parse Float from %s", obj);
         }
     }
 }

@@ -71,4 +71,18 @@ public class PairTest {
         assertTrue(this.oneTwo.equals(this.oneTwo));
         assertFalse(this.oneTwo.equals(new Pair(new Int(1), new Int(2))));
     }
+
+    @Test
+    void toJsonTest() {
+        assertEquals("{\"cdr\":{\"type\":\"integer\",\"value\":2},\"car\":{\"type\":\"integer\",\"value\":1},\"type\":\"pair\"}", this.oneTwo.toJson().toString());
+        assertEquals("{\"cdr\":{\"cdr\":{\"cdr\":{\"type\":\"null\"},\"car\":{\"type\":\"integer\",\"value\":3},\"type\":\"pair\"},\"car\":{\"type\":\"integer\",\"value\":2},\"type\":\"pair\"},\"car\":{\"type\":\"integer\",\"value\":1},\"type\":\"pair\"}", this.oneTwoThree.toJson().toString());
+    }
+
+    @Test
+    void fromJsonTest() throws Exception {
+        assertEquals(this.oneTwo.toJson().toString(), Pair.fromJson(new Environment(), this.oneTwo.toJson()).toJson().toString());
+        assertEquals(this.oneTwoThree.toJson().toString(), Pair.fromJson(new Environment(), this.oneTwoThree.toJson()).toJson().toString());
+
+        assertThrows(Exception.class, () -> Pair.fromJson(new Environment(), new Null().toJson()));
+    }
 }

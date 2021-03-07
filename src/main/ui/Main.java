@@ -1,6 +1,7 @@
 package ui;
 
 import model.*;
+import persistence.*;
 
 public class Main {
     // EFFECTS: Sets up the Simple Lisp environment and starts the repl.
@@ -22,7 +23,7 @@ public class Main {
                 Sexpr expr = Sexpr.read(stdin);
                 expr.eval(env).write(System.out);
                 System.out.println("");
-            } catch (model.Exception e) {
+            } catch (java.lang.Exception e) {
                 System.out.println("Error : " + e.getMessage());
             }
 
@@ -61,7 +62,7 @@ public class Main {
     }
 
     public static void initPairOperators(Environment env) throws model.Exception {
-        env.put("cons", Procedure.newBinaryOperator((Sexpr a, Sexpr b) -> {
+        env.put("cons", Procedure.newBinaryOperator("cons", (Sexpr a, Sexpr b) -> {
             Pair pair = new Pair();
             pair.setCar(a);
             pair.setCdr(b);
@@ -73,18 +74,18 @@ public class Main {
     }
 
     public static void initTypePredicates(Environment env) throws model.Exception {
-        env.put("float?", Procedure.newTypePredicate(Type.Int));
-        env.put("int?", Procedure.newTypePredicate(Type.Int));
-        env.put("null?", Procedure.newTypePredicate(Type.Null));
-        env.put("pair?", Procedure.newTypePredicate(Type.Pair));
-        env.put("string?", Procedure.newTypePredicate(Type.String));
-        env.put("symbol?", Procedure.newTypePredicate(Type.Symbol));
-        env.put("bool?", Procedure.newTypePredicate(Type.Bool));
-        env.put("procedure?", Procedure.newTypePredicate(Type.Procedure));
+        env.put("float?", Procedure.newTypePredicate("float?", Type.Int));
+        env.put("int?", Procedure.newTypePredicate("int?", Type.Int));
+        env.put("null?", Procedure.newTypePredicate("null?", Type.Null));
+        env.put("pair?", Procedure.newTypePredicate("pair?", Type.Pair));
+        env.put("string?", Procedure.newTypePredicate("string?", Type.String));
+        env.put("symbol?", Procedure.newTypePredicate("symbol?", Type.Symbol));
+        env.put("bool?", Procedure.newTypePredicate("bool?", Type.Bool));
+        env.put("procedure?", Procedure.newTypePredicate("procedure?", Type.Procedure));
     }
 
     public static void initDefForm(Environment env) throws model.Exception {
-        env.put("def", new Procedure("var val", (Environment defEnv, Sexpr defArgs) -> {
+        env.put("def", new Procedure("def", "var val", (Environment defEnv, Sexpr defArgs) -> {
             Sexpr var = ((Pair) defArgs).getCar();
             if (var.type() != Type.Symbol) {
                 throw new model.Exception("Invalid args to def form %s, variable must be a symbol", defArgs.toString());
@@ -99,7 +100,7 @@ public class Main {
     }
 
     public static void initSetForm(Environment env) throws model.Exception {
-        env.put("set!", new Procedure("var val", (Environment defEnv, Sexpr defArgs) -> {
+        env.put("set!", new Procedure("set!", "var val", (Environment defEnv, Sexpr defArgs) -> {
             Sexpr var = ((Pair) defArgs).getCar();
             if (var.type() != Type.Symbol) {
                 throw new model.Exception("Invalid args to set! form %s, variable must be a symbol",
@@ -117,7 +118,7 @@ public class Main {
     }
 
     public static void initSimpleEquality(Environment env) throws model.Exception {
-        env.put("eq?", Procedure.newBinaryOperator((Sexpr a, Sexpr b) -> new Bool(a.equals(b))));
+        env.put("eq?", Procedure.newBinaryOperator("eq?", (Sexpr a, Sexpr b) -> new Bool(a.equals(b))));
     }
 
     public static void initPairSetOperators(Environment env) throws model.Exception {
@@ -132,7 +133,7 @@ public class Main {
     }
 
     public static void initIfForm(Environment env) throws model.Exception {
-        env.put("if", new Procedure("predicate consequence alternative", (Environment ifEnv, Sexpr ifArgs) -> {
+        env.put("if", new Procedure("if", "predicate consequence alternative", (Environment ifEnv, Sexpr ifArgs) -> {
             Sexpr pred = ((Pair) ifArgs).getCar().eval(ifEnv);
             ifArgs = ((Pair) ifArgs).getCdr();
             if ((pred.type() == Type.Bool) && !((Bool) pred).getVal()) {
@@ -145,65 +146,31 @@ public class Main {
     }
 
     public static void initLambdaForm(Environment env) throws model.Exception {
-        env.put("lambda", new Procedure("arguments body", (Environment lamEnv, Sexpr lamArgs) -> {
-            Sexpr funVars = ((Pair) lamArgs).getCar();
+        env.put("lambda", new Procedure("lambda", "arguments body", (Environment lamEnv, Sexpr lamArgs) -> {
+            Sexpr signature = ((Pair) lamArgs).getCar();
             lamArgs = ((Pair) lamArgs).getCdr();
             Sexpr body = ((Pair) lamArgs).getCar();
-            return new Procedure(funVars, Procedure.evalWrapper((Environment ignored, Sexpr funArgs) -> {
-                Environment funEnv = new Environment(lamEnv);
-                Sexpr arguments = funVars;
-
-                while (arguments.type() != Type.Null) {
-                    if (arguments instanceof Symbol) {
-                        funEnv.put(((Symbol) arguments).getVal(), funArgs);
-                        break;
-                    } else {
-                        funEnv.put(((Symbol) ((Pair) arguments).getCar()).getVal(),
-                                ((Pair) funArgs).getCar());
-                        funArgs = ((Pair) funArgs).getCdr();
-                        arguments = ((Pair) arguments).getCdr();
-                    }
-                }
-
-                return body.eval(funEnv);
-            }));
+            return new Lambda(lamEnv, signature, body);
         }));
     }
 
     public static void initMacroForm(Environment env) throws model.Exception {
-        env.put("macro", new Procedure("arguments body", (Environment lamEnv, Sexpr lamArgs) -> {
-            Sexpr funVars = ((Pair) lamArgs).getCar();
+        env.put("macro", new Procedure("macro", "arguments body", (Environment lamEnv, Sexpr lamArgs) -> {
+            Sexpr signature = ((Pair) lamArgs).getCar();
             lamArgs = ((Pair) lamArgs).getCdr();
             Sexpr body = ((Pair) lamArgs).getCar();
-            return new Procedure(funVars, (Environment outerEnv, Sexpr funArgs) -> {
-                Environment funEnv = new Environment(lamEnv);
-                Sexpr arguments = funVars;
-
-                while (arguments.type() != Type.Null) {
-                    if (arguments instanceof Symbol) {
-                        funEnv.put(((Symbol) arguments).getVal(), funArgs);
-                        break;
-                    } else {
-                        funEnv.put(((Symbol) ((Pair) arguments).getCar()).getVal(),
-                                ((Pair) funArgs).getCar());
-                        funArgs = ((Pair) funArgs).getCdr();
-                        arguments = ((Pair) arguments).getCdr();
-                    }
-                }
-
-                return body.eval(funEnv).eval(outerEnv);
-            });
+            return new Macro(lamEnv, signature, body);
         }));
     }
 
     public static void initQuoteForm(Environment env) throws model.Exception {
-        env.put("quote", new Procedure("obj", (Environment ignored, Sexpr args) -> {
+        env.put("quote", new Procedure("quote", "obj", (Environment ignored, Sexpr args) -> {
             return ((Pair) args).getCar();
         }));
     }
 
     public static void initBeginForm(Environment env) throws model.Exception {
-        env.put("begin", new Procedure(". exprs", (Environment beginEnv, Sexpr args) -> {
+        env.put("begin", new Procedure("begin", ". exprs", (Environment beginEnv, Sexpr args) -> {
             beginEnv = new Environment(env);
 
             Sexpr ret = new Null();
@@ -214,6 +181,37 @@ public class Main {
             }
 
             return ret;
+        }));
+    }
+
+    public static void initSaveForm(Environment env) throws model.Exception {
+        env.put("save", new Procedure("save", "file", (Environment saveEnv, Sexpr args) -> {
+            Sexpr pathExpr = ((Pair) args).getCar();
+            if (!(pathExpr instanceof model.String)) {
+                throw new model.Exception("Invalid arg to save form %s, file must be a string", args.toString());
+            }
+
+            java.lang.String path = ((model.String) pathExpr).getVal();
+
+            JsonIO.write(saveEnv.toJson(), path);
+
+            return new Null();
+        }));
+    }
+
+    public static void initLoadForm(Environment env) throws model.Exception {
+        env.put("load", new Procedure("load", "file", (Environment loadEnv, Sexpr args) -> {
+            Sexpr pathExpr = ((Pair) args).getCar();
+            if (!(pathExpr instanceof model.String)) {
+                throw new model.Exception("Invalid arg to save form %s, file must be a string", args.toString());
+            }
+
+            java.lang.String path = ((model.String) pathExpr).getVal();
+
+            Environment newEnv = Environment.fromJson(JsonIO.read(path));
+            loadEnv.merge(newEnv);
+
+            return new Null();
         }));
     }
 
@@ -233,5 +231,7 @@ public class Main {
         initMacroForm(env);
         initQuoteForm(env);
         initBeginForm(env);
+        initSaveForm(env);
+        initLoadForm(env);
     }
 }

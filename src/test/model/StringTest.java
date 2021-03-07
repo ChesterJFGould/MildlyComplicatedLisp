@@ -47,4 +47,18 @@ public class StringTest {
         assertFalse(helloWorld.equals(sl));
         assertFalse(helloWorld.equals(new Null()));
     }
+
+    @Test
+    void toJsonTest() {
+        assertEquals("{\"type\":\"string\",\"value\":\"Hello, World!\"}", this.helloWorld.toJson().toString());
+        assertEquals("{\"type\":\"string\",\"value\":\"Simple Lisp\"}", this.sl.toJson().toString());
+    }
+
+    @Test
+    void fromJsonTest() throws Exception {
+        assertEquals(this.helloWorld.toJson().toString(), String.fromJson(this.helloWorld.toJson()).toJson().toString());
+        assertEquals(this.sl.toJson().toString(), String.fromJson(this.sl.toJson()).toJson().toString());
+
+        assertThrows(Exception.class, () -> String.fromJson(new Null().toJson()));
+    }
 }

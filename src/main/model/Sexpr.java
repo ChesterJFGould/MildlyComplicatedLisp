@@ -2,6 +2,8 @@ package model;
 
 import java.io.PrintStream;
 
+import org.json.*;
+
 // The parent class of all s-expressions.
 // Also contains the code to read a new s-expression from a CharStream because
 // it seemed appropriate.
@@ -23,6 +25,8 @@ public abstract class Sexpr {
     // Return true if expr is equal to this. The definition of equality may vary
     // depending of the kind of expr.
     public abstract boolean equals(Sexpr expr);
+
+    public abstract JSONObject toJson();
 
     // EFFECT: Return an s-expression read from cs. Throws an exception if something goes wrong
     // during parsing.
@@ -107,5 +111,26 @@ public abstract class Sexpr {
         cs.expect(')');
 
         return head;
+    }
+
+    public static Sexpr fromJson(Environment env, JSONObject obj) throws Exception {
+        if (!obj.has("type")) {
+            throw new Exception("cannot parse Sexpr from %s", obj);
+        }
+
+        switch (obj.getString("type")) {
+            case "boolean": return Bool.fromJson(obj);
+            case "float": return Float.fromJson(obj);
+            case "integer": return Int.fromJson(obj);
+            case "lambda": return Lambda.fromJson(env, obj);
+            case "macro": return Macro.fromJson(env, obj);
+            case "null": return Null.fromJson(obj);
+            case "pair": return Pair.fromJson(env, obj);
+            case "procedure": return Procedure.fromJson(obj);
+            case "string": return String.fromJson(obj);
+            case "symbol": return Symbol.fromJson(obj);
+        }
+
+        throw new Exception("cannot parse Sexpr from %s", obj);
     }
 }

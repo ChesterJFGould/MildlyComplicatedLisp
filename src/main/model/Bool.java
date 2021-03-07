@@ -2,6 +2,8 @@ package model;
 
 import java.io.PrintStream;
 
+import org.json.*;
+
 // Represents a boolean s-expession
 public class Bool extends Sexpr {
     private boolean val;
@@ -40,6 +42,20 @@ public class Bool extends Sexpr {
             return ((Bool) expr).val == this.val;
         } else {
             return false;
+        }
+    }
+
+    public JSONObject toJson() {
+        return new JSONObject()
+                .put("type", "boolean")
+                .put("value", val);
+    }
+
+    public static Bool fromJson(JSONObject obj) throws Exception {
+        if (obj.has("type") && obj.getString("type").equals("boolean") && obj.has("value")) {
+            return new Bool(obj.getBoolean("value"));
+        } else {
+            throw new Exception("cannot parse Bool from %s", obj);
         }
     }
 }

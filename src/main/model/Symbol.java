@@ -2,6 +2,8 @@ package model;
 
 import java.io.PrintStream;
 
+import org.json.*;
+
 // Represents a symbol s-expression.
 public class Symbol extends Sexpr {
     private java.lang.String val;
@@ -41,6 +43,20 @@ public class Symbol extends Sexpr {
             return ((Symbol) expr).val == this.val; // val is interned.
         } else {
             return false;
+        }
+    }
+
+    public JSONObject toJson() {
+        return new JSONObject()
+                .put("type", "symbol")
+                .put("value", this.val);
+    }
+
+    public static Symbol fromJson(JSONObject obj) throws Exception {
+        if (obj.has("type") && obj.getString("type").equals("symbol") && obj.has("value")) {
+            return new Symbol(obj.getString("value"));
+        } else {
+            throw new Exception("cannot parse Symbol from %s", obj);
         }
     }
 }

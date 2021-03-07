@@ -2,18 +2,20 @@ package model;
 
 import java.util.HashMap;
 
+import org.json.*;
+
 // Represents the environment an s-expression is evaluated in.
 public class Environment {
     private HashMap<java.lang.String, Sexpr> vars;
     private Environment parent;
 
     public Environment() {
-        this.vars = new HashMap<java.lang.String, Sexpr>();
+        this.vars = new HashMap<>();
         this.parent = null;
     }
 
     public Environment(Environment parent) {
-        this.vars = new HashMap<java.lang.String, Sexpr>();
+        this.vars = new HashMap<>();
         this.parent = parent;
     }
 
@@ -54,5 +56,62 @@ public class Environment {
         } else {
             return true;
         }
+    }
+
+    public void merge(Environment env) {
+        for (HashMap.Entry<java.lang.String, Sexpr> entry : env.vars.entrySet()) {
+            this.vars.put(entry.getKey(), entry.getValue());
+        }
+
+        if (env.parent != null) {
+            if (this.parent == null) {
+                this.parent = env.parent;
+            } else {
+                this.parent.merge(env.parent);
+            }
+        }
+    }
+
+    public JSONObject toJson() {
+        JSONArray vars = new JSONArray();
+
+        for (HashMap.Entry<java.lang.String, Sexpr> entry : this.vars.entrySet()) {
+            vars.put(new JSONObject().put("key", entry.getKey()).put("value", entry.getValue().toJson()));
+        }
+
+        JSONObject obj = new JSONObject()
+                .put("type", "environment")
+                .put("vars", vars);
+
+        if (this.parent != null) {
+            obj.put("parent", this.parent.toJson());
+        }
+
+        return obj;
+    }
+
+    public static Environment fromJson(JSONObject obj) throws Exception {
+        if (!(obj.has("type") && obj.getString("type").equals("environment"))) {
+            throw new Exception("cannot parse Environment from %s", obj);
+        }
+
+        HashMap<java.lang.String, Sexpr> vars = new HashMap<>();
+
+        Environment env = new Environment();
+
+        for (Object var : obj.getJSONArray("vars")) {
+            if (var instanceof JSONObject) {
+                vars.put(((JSONObject) var).getString("key"),
+                         Sexpr.fromJson(env, ((JSONObject) var).getJSONObject("value")));
+            }
+        }
+
+        if (obj.has("parent")) {
+            env.parent = Environment.fromJson(obj.getJSONObject("parent"));
+        }
+
+        env.vars = vars;
+
+        return env;
     }
 }

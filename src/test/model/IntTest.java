@@ -64,4 +64,20 @@ public class IntTest {
 
         assertFalse(this.zero.equals(new Null()));
     }
+
+    @Test
+    void toJsonTest() {
+        assertEquals("{\"type\":\"integer\",\"value\":10}", this.ten.toJson().toString());
+        assertEquals("{\"type\":\"integer\",\"value\":-10}", this.nTen.toJson().toString());
+        assertEquals("{\"type\":\"integer\",\"value\":0}", this.zero.toJson().toString());
+    }
+
+    @Test
+    void fromJsonTest() throws Exception {
+        assertEquals(this.ten.toJson().toString(), Int.fromJson(this.ten.toJson()).toJson().toString());
+        assertEquals(this.nTen.toJson().toString(), Int.fromJson(this.nTen.toJson()).toJson().toString());
+        assertEquals(this.zero.toJson().toString(), Int.fromJson(this.zero.toJson()).toJson().toString());
+
+        assertThrows(Exception.class, () -> Int.fromJson(new Null().toJson()));
+    }
 }

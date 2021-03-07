@@ -47,4 +47,20 @@ public class SymbolTest {
         assertFalse(this.a.equals(this.b));
         assertFalse(this.b.equals(new Null()));
     }
+
+    @Test
+    void toJsonTest() {
+        assertEquals("{\"type\":\"symbol\",\"value\":\"a\"}", this.a.toJson().toString());
+        assertEquals("{\"type\":\"symbol\",\"value\":\"b\"}", this.b.toJson().toString());
+        assertEquals("{\"type\":\"symbol\",\"value\":\"c\"}", this.c.toJson().toString());
+    }
+
+    @Test
+    void fromJsonTest() throws Exception {
+        assertEquals(this.a.toJson().toString(), Symbol.fromJson(this.a.toJson()).toJson().toString());
+        assertEquals(this.b.toJson().toString(), Symbol.fromJson(this.b.toJson()).toJson().toString());
+        assertEquals(this.c.toJson().toString(), Symbol.fromJson(this.c.toJson()).toJson().toString());
+
+        assertThrows(Exception.class, () -> Symbol.fromJson(new Null().toJson()));
+    }
 }

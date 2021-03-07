@@ -56,4 +56,20 @@ public class FloatTest {
         assertFalse(this.ten.equals(this.zero));
         assertFalse(this.zero.equals(new Null()));
     }
+
+    @Test
+    void toJsonTest() {
+        assertEquals("{\"type\":\"float\",\"value\":10}", this.ten.toJson().toString());
+        assertEquals("{\"type\":\"float\",\"value\":-10}", this.nTen.toJson().toString());
+        assertEquals("{\"type\":\"float\",\"value\":0}", this.zero.toJson().toString());
+    }
+
+    @Test
+    void fromJsonTest() throws Exception {
+        assertEquals(this.ten.toJson().toString(), Float.fromJson(this.ten.toJson()).toJson().toString());
+        assertEquals(this.nTen.toJson().toString(), Float.fromJson(this.nTen.toJson()).toJson().toString());
+        assertEquals(this.zero.toJson().toString(), Float.fromJson(this.zero.toJson()).toJson().toString());
+
+        assertThrows(Exception.class, () -> Float.fromJson(new Null().toJson()));
+    }
 }

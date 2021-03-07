@@ -2,6 +2,8 @@ package model;
 
 import java.io.PrintStream;
 
+import org.json.*;
+
 // Represents an integer s-expression.
 public class Int extends Sexpr {
     private long val;
@@ -41,5 +43,19 @@ public class Int extends Sexpr {
     // EFFECT: Return the val this Int contains.
     public long getVal() {
         return this.val;
+    }
+
+    public JSONObject toJson() {
+        return new JSONObject()
+                .put("type", "integer")
+                .put("value", val);
+    }
+
+    public static Int fromJson(JSONObject obj) throws Exception {
+        if (obj.has("type") && obj.getString("type").equals("integer") && obj.has("value")) {
+            return new Int(obj.getInt("value"));
+        } else {
+            throw new Exception("cannot parse Int from %s", obj);
+        }
     }
 }
