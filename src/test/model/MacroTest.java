@@ -35,5 +35,6 @@ public class MacroTest {
         assertThrows(Exception.class, () -> Macro.fromJson(new Environment(), new Null().toJson()));
         assertThrows(Exception.class, () -> Macro.fromJson(new JSONObject("{}")));
         assertThrows(Exception.class, () -> Macro.fromJson(new JSONObject("{\"type\":\"macro\"}")));
+        assertThrows(Exception.class, () -> Macro.fromJson(new JSONObject("{\"type\":\"macro\", \"signature\":10}")));
     }
 }

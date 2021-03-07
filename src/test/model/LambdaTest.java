@@ -35,5 +35,6 @@ public class LambdaTest {
         assertThrows(Exception.class, () -> Lambda.fromJson(new Environment(), new Null().toJson()));
         assertThrows(Exception.class, () -> Lambda.fromJson(new JSONObject("{}")));
         assertThrows(Exception.class, () -> Lambda.fromJson(new JSONObject("{\"type\":\"lambda\"}")));
+        assertThrows(Exception.class, () -> Lambda.fromJson(new JSONObject("{\"type\":\"lambda\",\"signature\":1}")));
     }
 }
