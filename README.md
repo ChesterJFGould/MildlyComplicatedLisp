@@ -170,8 +170,8 @@ false
 ### Save and Load
 "save" saves the environment it is called in to the given slo file in the data directory.
 "load" merges the environment saved in the given slo file with the current environment.
-Because these can be called anywhere they probably can do some really cool things but also
-may break some stuff.
+Because these can be called anywhere they probably can do some really cool things but may
+also break some stuff.
 ```scheme
 > (def x 10)
 ()
