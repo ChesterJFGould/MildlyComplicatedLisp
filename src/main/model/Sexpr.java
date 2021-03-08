@@ -113,6 +113,9 @@ public abstract class Sexpr {
         return head;
     }
 
+	// EFFECT: Returns the Sexpr represented by the given JSON object in the
+	// given Environment. Throws an Exception if the given JSON object doesn't
+	// represent an Sexpr.
     public static Sexpr fromJson(Environment env, JSONObject obj) throws Exception {
         if (!obj.has("type")) {
             throw new Exception("cannot parse Sexpr from %s", obj);

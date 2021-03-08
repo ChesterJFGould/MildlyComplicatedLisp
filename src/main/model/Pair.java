@@ -8,14 +8,18 @@ public class Pair extends Sexpr {
     private Sexpr car;
     private Sexpr cdr;
 
+	// EFFECT: Default constructor made incarnate.
     public Pair() {
     }
 
+	// MODIFIES: this
+	// EFFECT: Initializes this Pair with the given car and cdr.
     public Pair(Sexpr car, Sexpr cdr) {
         this.car = car;
         this.cdr = cdr;
     }
 
+	// EFFECT: Creates and returns a new Pair representing a list of the given exprs.
     public static Sexpr list(Sexpr... exprs) {
         Sexpr head = new Null();
 
@@ -94,6 +98,7 @@ public class Pair extends Sexpr {
         return expr == this;
     }
 
+	// EFFECT: Returns the JSON representation of this Pair.
     public JSONObject toJson() {
         return new JSONObject()
                 .put("type", "pair")
@@ -101,6 +106,8 @@ public class Pair extends Sexpr {
                 .put("cdr", this.cdr.toJson());
     }
 
+	// EFFECT: Creates and returns a new Pair based on the given JSON object.
+	// Throws an Exception if the given JSON object doesn't represent a Pair.
     public static Pair fromJson(Environment env, JSONObject obj) throws Exception {
         if (obj.has("type") && obj.getString("type").equals("pair") && obj.has("car") && obj.has("cdr")) {
             return new Pair(Sexpr.fromJson(env, obj.getJSONObject("car")),

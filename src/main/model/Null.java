@@ -6,6 +6,7 @@ import org.json.*;
 
 // Represents the null (a.k.a. empty list, unit) s-expression.
 public class Null extends Sexpr {
+	// EFFECTS: Default constructor made incarnate.
     public Null() {
     }
 
@@ -29,11 +30,14 @@ public class Null extends Sexpr {
         return expr.type() == Type.Null;
     }
 
+	// EFFECT: Returns the JSON representation of this Null.
     public JSONObject toJson() {
         return new JSONObject()
                 .put("type", "null");
     }
 
+	// EFFECT: Creates and returns a new Null based on the given JSON object.
+	// Throws an Exception if the given JSON object doesn't represent a Null.
     public static Null fromJson(JSONObject obj) throws Exception {
         if (obj.has("type") && obj.getString("type").equals("null")) {
             return new Null();

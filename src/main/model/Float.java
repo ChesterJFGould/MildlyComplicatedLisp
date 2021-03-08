@@ -8,10 +8,14 @@ import org.json.*;
 public class Float extends Sexpr {
     private double val;
 
+	// MODIFIES: this
+	// EFFECT: Initializes this Float with a value based on the given String.
     public Float(java.lang.String s) {
         this.val = Double.parseDouble(s);
     }
 
+	// MODIFIES: this
+	// EFFECT: Initializes this Float with the given value.
     public Float(double d) {
         this.val = d;
     }
@@ -45,12 +49,15 @@ public class Float extends Sexpr {
         }
     }
 
+	// EFFECT: Returns the JSON representation of this Float.
     public JSONObject toJson() {
         return new JSONObject()
                 .put("type", "float")
                 .put("value", this.val);
     }
 
+	// EFFECT: Creates and returns a Float based on the given JSON object.
+	// Throws an exception if the given JSON object doesn't represent a Float.
     public static Float fromJson(JSONObject obj) throws Exception {
         if (obj.has("type") && obj.getString("type").equals("float") && obj.has("value")) {
             return new Float(obj.getDouble("value"));

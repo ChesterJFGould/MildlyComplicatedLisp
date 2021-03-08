@@ -8,6 +8,8 @@ import org.json.*;
 public class Bool extends Sexpr {
     private boolean val;
 
+	// MODIFIES: this
+	// EFFECT: Initializes a new bool.
     public Bool(boolean val) {
         this.val = val;
     }
@@ -45,12 +47,15 @@ public class Bool extends Sexpr {
         }
     }
 
+    // EFFECTS: Returns the JSON representation of this Bool.
     public JSONObject toJson() {
         return new JSONObject()
                 .put("type", "boolean")
                 .put("value", val);
     }
 
+	// EFFECTS: Creates a new bool based on the JSON object. Throws an exception
+	// if the obj doesn't represent a Bool.
     public static Bool fromJson(JSONObject obj) throws Exception {
         if (obj.has("type") && obj.getString("type").equals("boolean") && obj.has("value")) {
             return new Bool(obj.getBoolean("value"));
