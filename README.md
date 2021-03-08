@@ -167,6 +167,27 @@ false
 > (add 1 2)
 3
 ```
+### Save and Load
+"save" saves the environment it is called in to the given slo file in the data directory.
+"load" merges the environment saved in the given slo file with the current environment.
+Because these can be called anywhere they probably can do some really cool things but also
+may break some stuff.
+```scheme
+> (def x 10)
+()
+> x
+10
+> (save "xSave")
+()
+```
+```scheme
+> x
+Error : undefined variable x
+> (load "xSave")
+()
+> x
+10
+```
 ## User Stories
 + As a user, I want to be able to `cons` mulitple elements onto a list.
 ```scheme
