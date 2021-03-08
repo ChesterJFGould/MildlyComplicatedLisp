@@ -8,8 +8,8 @@ import org.json.*;
 
 // Essentially a namespace around IO operations that act on JSON objects.
 public class JsonIO {
-	// Writes the given JSON object to the given slo file name in the data directory.
-	// Throws an Exception on IOException.
+    // Writes the given JSON object to the given slo file name in the data directory.
+    // Throws an Exception on IOException.
     public static void write(JSONObject obj, String fileName) throws Exception {
         String path = "./data/" + fileName + ".slo";
         String json = obj.toString();
@@ -20,8 +20,8 @@ public class JsonIO {
         }
     }
 
-	// Reads the given slo file name in the data directory into a JSON object.
-	// Throws an Exception on IOException.
+    // Reads the given slo file name in the data directory into a JSON object.
+    // Throws an Exception on IOException.
     public static JSONObject read(String fileName) throws Exception {
         String path = "./data/" + fileName + ".slo";
         JSONObject out;
@@ -35,8 +35,8 @@ public class JsonIO {
         return out;
     }
 
-	// Reads the entire contents of the given file path into a String
-	// Throws an IOException if the computer or user doesn't like you.
+    // Reads the entire contents of the given file path into a String
+    // Throws an IOException if the computer or user doesn't like you.
     private static String readFile(String path) throws IOException {
         StringBuilder builder = new StringBuilder();
         char[] buf = new char[1024];

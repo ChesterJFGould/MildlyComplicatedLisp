@@ -9,15 +9,15 @@ public class Environment {
     private HashMap<java.lang.String, Sexpr> vars;
     private Environment parent;
 
-	// MODIFIES: this
-	// EFFECT: Creates a new empty Environment.
+    // MODIFIES: this
+    // EFFECT: Creates a new empty Environment.
     public Environment() {
         this.vars = new HashMap<>();
         this.parent = null;
     }
 
-	// MODIFIES: this
-	// EFFECT: Creates a new empty Environment with the given Environment as a parent.
+    // MODIFIES: this
+    // EFFECT: Creates a new empty Environment with the given Environment as a parent.
     public Environment(Environment parent) {
         this.vars = new HashMap<>();
         this.parent = parent;
@@ -62,9 +62,9 @@ public class Environment {
         }
     }
 
-	// MODIFIES: this
-	// EFFECT: Puts all the variables in the given Environment into this Environment,
-	// then does the same with the parents if they exist.
+    // MODIFIES: this
+    // EFFECT: Puts all the variables in the given Environment into this Environment,
+    // then does the same with the parents if they exist.
     public void merge(Environment env) {
         for (HashMap.Entry<java.lang.String, Sexpr> entry : env.vars.entrySet()) {
             this.vars.put(entry.getKey(), entry.getValue());
@@ -79,7 +79,7 @@ public class Environment {
         }
     }
 
-	// EFFECT: Returns the JSON representation of this Environment.
+    // EFFECT: Returns the JSON representation of this Environment.
     public JSONObject toJson() {
         JSONArray vars = new JSONArray();
 
@@ -98,8 +98,8 @@ public class Environment {
         return obj;
     }
 
-	// EFFECT: Creates and returns an Environment based on the given JSON object.
-	// Throws an Exception if the JSON object doesn't represent an Environment.
+    // EFFECT: Creates and returns an Environment based on the given JSON object.
+    // Throws an Exception if the JSON object doesn't represent an Environment.
     public static Environment fromJson(JSONObject obj) throws Exception {
         if (!(obj.has("type") && obj.getString("type").equals("environment"))) {
             throw new Exception("cannot parse Environment from %s", obj);
@@ -112,9 +112,9 @@ public class Environment {
         for (Object var : obj.getJSONArray("vars")) {
             if (var instanceof JSONObject) {
                 vars.put(((JSONObject) var).getString("key"),
-                         Sexpr.fromJson(env, ((JSONObject) var).getJSONObject("value")));
+                        Sexpr.fromJson(env, ((JSONObject) var).getJSONObject("value")));
             } else {
-		throw new Exception("cannot parse Environment from %s", obj);
+                throw new Exception("cannot parse Environment from %s", obj);
             }
         }
 

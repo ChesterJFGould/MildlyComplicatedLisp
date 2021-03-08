@@ -6,9 +6,9 @@ import org.json.*;
 public class Lambda extends Procedure {
     private Sexpr body;
 
-	// MODIFIES: this
-	// EFFECT: Initializes this Lambda with the given Environment,
-	// Sexpr representation of a Signature, and body.
+    // MODIFIES: this
+    // EFFECT: Initializes this Lambda with the given Environment,
+    // Sexpr representation of a Signature, and body.
     public Lambda(Environment env, Sexpr signature, Sexpr body) throws Exception {
         super(signature, Procedure.evalWrapper((Environment ignored, Sexpr funArgs) -> {
             Environment funEnv = new Environment(env);
@@ -32,8 +32,8 @@ public class Lambda extends Procedure {
         this.body = body;
     }
 
-	// MODIFIES: this
-	// EFFECT: Initializes this Lambda with the given parameters.
+    // MODIFIES: this
+    // EFFECT: Initializes this Lambda with the given parameters.
     public Lambda(Environment env, Signature signature, Sexpr body) throws Exception {
         super(signature, Procedure.evalWrapper((Environment ignored, Sexpr funArgs) -> {
             Environment funEnv = new Environment(env);
@@ -57,7 +57,7 @@ public class Lambda extends Procedure {
         this.body = body;
     }
 
-	// EFFECT: Returns the JSON representation of this Lambda.
+    // EFFECT: Returns the JSON representation of this Lambda.
     public JSONObject toJson() {
         return new JSONObject()
                 .put("type", "lambda")
@@ -65,12 +65,12 @@ public class Lambda extends Procedure {
                 .put("body", body.toJson());
     }
 
-	// EFFECT: Creates and returns a new Lambda based on the given JSON object.
-	// Throws an Exception if the given JSON object doesn't represent a Lambda.
+    // EFFECT: Creates and returns a new Lambda based on the given JSON object.
+    // Throws an Exception if the given JSON object doesn't represent a Lambda.
     public static Lambda fromJson(Environment env, JSONObject obj) throws Exception {
         if (obj.has("type") && obj.getString("type").equals("lambda") && obj.has("signature") && obj.has("body")) {
             return new Lambda(env, Procedure.Signature.fromJson(obj.getJSONObject("signature")),
-                              Sexpr.fromJson(env, obj.getJSONObject("body")));
+                    Sexpr.fromJson(env, obj.getJSONObject("body")));
         } else {
             throw new Exception("cannot parse Lambda from %s", obj);
         }

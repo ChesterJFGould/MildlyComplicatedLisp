@@ -8,8 +8,8 @@ import org.json.*;
 public class String extends Sexpr {
     private java.lang.String val;
 
-	// MODIFIES: this
-	// EFFECT: Initializes this String with the given value.
+    // MODIFIES: this
+    // EFFECT: Initializes this String with the given value.
     public String(java.lang.String s) {
         this.val = s;
     }
@@ -45,16 +45,16 @@ public class String extends Sexpr {
         return this.val;
     }
 
-	// EFFECT: Returns the JSON representation of this String.
+    // EFFECT: Returns the JSON representation of this String.
     public JSONObject toJson() {
         return new JSONObject()
                 .put("type", "string")
                 .put("value", this.val);
     }
 
-	// EFFECT: Creates and returns a new String based on the given JSON object.
-	// Throws an Exception if the given JSON object doesn't represent a String.
-	public static String fromJson(JSONObject obj) throws Exception {
+    // EFFECT: Creates and returns a new String based on the given JSON object.
+    // Throws an Exception if the given JSON object doesn't represent a String.
+    public static String fromJson(JSONObject obj) throws Exception {
         if (obj.has("type") && obj.getString("type").equals("string") && obj.has("value")) {
             return new String(obj.getString("value"));
         } else {

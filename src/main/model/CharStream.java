@@ -12,16 +12,16 @@ public class CharStream {
     private char current;
     private boolean done;
 
-	// MODIFIES: this
-	// EFFECT: Initializes a new CharStream using the InputStream as input.
+    // MODIFIES: this
+    // EFFECT: Initializes a new CharStream using the InputStream as input.
     public CharStream(InputStream inStream) {
         this.done = false;
         this.inStream = inStream;
         this.next();
     }
 
-	// MODIFIES: this
-	// EFFECT: Initializes a new CharStream using the String as input.
+    // MODIFIES: this
+    // EFFECT: Initializes a new CharStream using the String as input.
     public CharStream(java.lang.String s) {
         this(new ByteArrayInputStream(s.getBytes()));
     }

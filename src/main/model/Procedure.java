@@ -20,9 +20,9 @@ public class Procedure extends Sexpr {
 
     private static HashMap<java.lang.String, Procedure> procedures = new HashMap<>();
 
-	// MODIFIES: this
-	// EFFECT: Initializes this Procedure with the given String representation of a
-	// Signature, and Handler. Adds this to Procedure.procedures under the given name.
+    // MODIFIES: this
+    // EFFECT: Initializes this Procedure with the given String representation of a
+    // Signature, and Handler. Adds this to Procedure.procedures under the given name.
     public Procedure(java.lang.String name, java.lang.String signature, Handler handler) throws Exception {
         this.signature = new Signature(signature);
         this.handler = handler;
@@ -31,9 +31,9 @@ public class Procedure extends Sexpr {
         procedures.put(name, this);
     }
 
-	// MODIFIES: this
-	// EFFECT: Initializes this Procedure with the given Sexpr representation of a
-	// Signature, and Handler. Adds this to Procedure.procedures under the given name.
+    // MODIFIES: this
+    // EFFECT: Initializes this Procedure with the given Sexpr representation of a
+    // Signature, and Handler. Adds this to Procedure.procedures under the given name.
     public Procedure(java.lang.String name, Sexpr signature, Handler handler) throws Exception {
         this.signature = new Signature(signature);
         this.handler = handler;
@@ -42,28 +42,28 @@ public class Procedure extends Sexpr {
         procedures.put(name, this);
     }
 
-	// MODIFIES: this
-	// EFFECT: Initializes this Procedure with the given Sexpr representation of a
-	// Signature, and Handler.
+    // MODIFIES: this
+    // EFFECT: Initializes this Procedure with the given Sexpr representation of a
+    // Signature, and Handler.
     public Procedure(Sexpr signature, Handler handler) throws Exception {
         this.signature = new Signature(signature);
         this.handler = handler;
     }
 
-	// MODIFIES: this
-	// EFFECT: Initializes this Procedure with the given Signature and Handler.
+    // MODIFIES: this
+    // EFFECT: Initializes this Procedure with the given Signature and Handler.
     public Procedure(Signature signature, Handler handler) {
         this.signature = signature;
         this.handler = handler;
     }
 
-	// Represents a procedure that acts upon an Environment and Sexpr arguments.
+    // Represents a procedure that acts upon an Environment and Sexpr arguments.
     public interface Handler {
         public Sexpr handle(Environment env, Sexpr args) throws Exception;
     }
 
-	// EFFECT: Returns the Procedure stored under the given name in
-	// Procedure.procedures or null if no entry exists.
+    // EFFECT: Returns the Procedure stored under the given name in
+    // Procedure.procedures or null if no entry exists.
     public static Procedure getProcedure(java.lang.String name) {
         return procedures.get(name);
     }
@@ -210,16 +210,16 @@ public class Procedure extends Sexpr {
         return expr == this;
     }
 
-	// EFFECT: Returns the JSON representation of this Procedure.
+    // EFFECT: Returns the JSON representation of this Procedure.
     public JSONObject toJson() {
         return new JSONObject()
                 .put("type", "procedure")
                 .put("name", this.name);
     }
 
-	// EFFECT: Creates and returns a new Procedure based on the given JSON object.
-	// Throws an Exception if the given JSON object doesn't represent a Procedure or
-	// the named procedure isn't contained in Procedure.procedures.
+    // EFFECT: Creates and returns a new Procedure based on the given JSON object.
+    // Throws an Exception if the given JSON object doesn't represent a Procedure or
+    // the named procedure isn't contained in Procedure.procedures.
     public static Procedure fromJson(JSONObject obj) throws Exception {
         if (obj.has("type") && obj.getString("type").equals("procedure") && obj.has("name")) {
             Procedure proc = Procedure.getProcedure(obj.getString("name"));
@@ -240,8 +240,8 @@ public class Procedure extends Sexpr {
         private List<java.lang.String> args;
         private java.lang.String vararg;
 
-	// MODIFIES: this
-	// EFFECT: Initializes this Signature with arguments based on the given Sexpr.
+        // MODIFIES: this
+        // EFFECT: Initializes this Signature with arguments based on the given Sexpr.
         public Signature(Sexpr args) throws Exception {
             this.args = new ArrayList<java.lang.String>();
             this.vararg = null;
@@ -249,8 +249,8 @@ public class Procedure extends Sexpr {
             this.parse(args);
         }
 
-	// MODIFIES: this
-	// EFFECT: Initializes this Signature with arguments based on the given String.
+        // MODIFIES: this
+        // EFFECT: Initializes this Signature with arguments based on the given String.
         public Signature(java.lang.String args) throws Exception {
             this.args = new ArrayList<java.lang.String>();
             this.vararg = null;
@@ -258,8 +258,8 @@ public class Procedure extends Sexpr {
             this.parse(args);
         }
 
-	// MODIFIES: this
-	// EFFECT: Initializes this Signature with the given arguments.
+        // MODIFIES: this
+        // EFFECT: Initializes this Signature with the given arguments.
         public Signature(List<java.lang.String> args, java.lang.String vararg) {
             this.args = args;
             this.vararg = vararg;
@@ -275,7 +275,7 @@ public class Procedure extends Sexpr {
             return acc + ")";
         }
 
-	// EFFECT: Returns the Sexpr representation of this Signature.
+        // EFFECT: Returns the Sexpr representation of this Signature.
         public Sexpr toSexpr() {
             Sexpr signature = new Null();
             if (this.vararg != null) {
@@ -344,7 +344,7 @@ public class Procedure extends Sexpr {
             }
         }
 
-	// EFFECT: Returns the JSON representation of this Signature.
+        // EFFECT: Returns the JSON representation of this Signature.
         public JSONObject toJson() {
             JSONArray args = new JSONArray();
 
@@ -363,8 +363,8 @@ public class Procedure extends Sexpr {
             return obj;
         }
 
-	// EFFECT: Creates and returns a new Signature based on the given JSON object.
-	// Throws an Exception if the given JSON object doesn't represent a Procedure.
+        // EFFECT: Creates and returns a new Signature based on the given JSON object.
+        // Throws an Exception if the given JSON object doesn't represent a Procedure.
         public static Signature fromJson(JSONObject obj) throws Exception {
             if (obj.has("type") && obj.getString("type").equals("signature") && obj.has("args")) {
                 List<java.lang.String> vars = new ArrayList<>();
