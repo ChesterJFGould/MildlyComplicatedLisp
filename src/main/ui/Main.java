@@ -4,11 +4,15 @@ import model.*;
 import persistence.*;
 
 public class Main {
+    static MainUI ui;
+
     // EFFECTS: Sets up the Simple Lisp environment and starts the repl.
     public static void main(java.lang.String[] args) throws model.Exception {
         model.Environment env = new model.Environment();
 
         initSimpleLisp(env);
+
+        ui = new MainUI(env);
 
         repl(env);
     }
@@ -27,7 +31,7 @@ public class Main {
             } catch (java.lang.Exception e) {
                 System.out.println("Error : " + e.getMessage());
             }
-
+            ui.update();
             System.out.print("> ");
         }
         System.out.println("");
@@ -254,6 +258,9 @@ public class Main {
 
             JsonIO.write(saveEnv.toJson(), path);
 
+            Environment.resetSerializedTags();
+            Pair.resetSerializedTags();
+
             return new Null();
         }));
     }
@@ -268,6 +275,9 @@ public class Main {
             if (!(pathExpr instanceof model.String)) {
                 throw new model.Exception("Invalid arg to save form %s, file must be a string", args.toString());
             }
+
+            Environment.resetHeap();
+            Pair.resetHeap();
 
             java.lang.String path = ((model.String) pathExpr).getVal();
 

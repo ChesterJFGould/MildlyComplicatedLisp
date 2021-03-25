@@ -5,6 +5,7 @@ import org.json.*;
 // Represents a compound Procedure whos arguments get evaluated in the outer Environment.
 public class Lambda extends Procedure {
     private Sexpr body;
+    private Environment env;
 
     // MODIFIES: this
     // EFFECT: Initializes this Lambda with the given Environment,
@@ -29,6 +30,7 @@ public class Lambda extends Procedure {
             return body.eval(funEnv);
         }));
 
+	this.env = env;
         this.body = body;
     }
 
@@ -54,6 +56,7 @@ public class Lambda extends Procedure {
             return body.eval(funEnv);
         }));
 
+	this.env = env;
         this.body = body;
     }
 
@@ -62,15 +65,21 @@ public class Lambda extends Procedure {
         return new JSONObject()
                 .put("type", "lambda")
                 .put("signature", this.signature.toJson())
-                .put("body", body.toJson());
+                .put("env", this.env.toJson())
+                .put("body", this.body.toJson());
     }
 
     // EFFECT: Creates and returns a new Lambda based on the given JSON object.
     // Throws an Exception if the given JSON object doesn't represent a Lambda.
     public static Lambda fromJson(Environment env, JSONObject obj) throws Exception {
-        if (obj.has("type") && obj.getString("type").equals("lambda") && obj.has("signature") && obj.has("body")) {
-            return new Lambda(env, Procedure.Signature.fromJson(obj.getJSONObject("signature")),
-                    Sexpr.fromJson(env, obj.getJSONObject("body")));
+        if (obj.has("type") &&
+            obj.getString("type").equals("lambda") &&
+            obj.has("signature") &&
+            obj.has("body") &&
+            obj.has("env")) {
+            return new Lambda(Environment.fromJson(obj.getJSONObject("env")),
+                              Procedure.Signature.fromJson(obj.getJSONObject("signature")),
+                              Sexpr.fromJson(env, obj.getJSONObject("body")));
         } else {
             throw new Exception("cannot parse Lambda from %s", obj);
         }

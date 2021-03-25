@@ -6,6 +6,7 @@ import org.json.*;
 // return value is evaluated in the outer Environment.
 public class Macro extends Procedure {
     private Sexpr body;
+    private Environment env;
 
     // MODIFIES: this
     // EFFECT: Initializes this Macro with the given Environment,
@@ -30,6 +31,7 @@ public class Macro extends Procedure {
             return body.eval(funEnv).eval(outerEnv);
         });
 
+        this.env = env;
         this.body = body;
     }
 
@@ -55,6 +57,7 @@ public class Macro extends Procedure {
             return body.eval(funEnv).eval(outerEnv);
         });
 
+        this.env = env;
         this.body = body;
     }
 
@@ -63,15 +66,21 @@ public class Macro extends Procedure {
         return new JSONObject()
                 .put("type", "macro")
                 .put("signature", this.signature.toJson())
+                .put("env", this.env.toJson())
                 .put("body", body.toJson());
     }
 
     // EFFECT: Creates and returns a new Macro based on the given JSON object.
     // Throws an exception if the JSON object doesn't represent a Macro.
     public static Macro fromJson(Environment env, JSONObject obj) throws Exception {
-        if (obj.has("type") && obj.getString("type").equals("macro") && obj.has("signature") && obj.has("body")) {
-            return new Macro(env, Procedure.Signature.fromJson(obj.getJSONObject("signature")),
-                    Sexpr.fromJson(env, obj.getJSONObject("body")));
+        if (obj.has("type") &&
+            obj.getString("type").equals("macro") &&
+            obj.has("signature") &&
+            obj.has("body") &&
+            obj.has("env")) {
+            return new Macro(Environment.fromJson(obj.getJSONObject("env")),
+                             Procedure.Signature.fromJson(obj.getJSONObject("signature")),
+                             Sexpr.fromJson(env, obj.getJSONObject("body")));
         } else {
             throw new Exception("cannot parse Macro from %s", obj);
         }

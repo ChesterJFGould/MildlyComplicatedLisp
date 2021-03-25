@@ -3,17 +3,42 @@ package model;
 import java.util.HashMap;
 
 import org.json.*;
+import java.util.HashMap;
 
 // Represents the environment an s-expression is evaluated in.
 public class Environment {
     private HashMap<java.lang.String, Sexpr> vars;
     private Environment parent;
+    private long ptr;
+    private boolean serialized;
+
+    private static Heap<Environment> heap = new Heap<>();
+
+    public static void resetHeap() {
+	heap = new Heap<>();
+    }
+
+    public static void resetSerializedTags() {
+        for (HashMap.Entry<Long, Environment> entry : heap.getHeap().entrySet()) {
+	        entry.getValue().serialized = false;
+        }
+    }
 
     // MODIFIES: this
     // EFFECT: Creates a new empty Environment.
     public Environment() {
         this.vars = new HashMap<>();
         this.parent = null;
+        this.serialized = false;
+        this.ptr = Environment.heap.malloc(this);
+    }
+
+    public Environment(long ptr) {
+        this.vars = new HashMap<>();
+        this.parent = null;
+        this.serialized = false;
+        this.ptr = ptr;
+        heap.put(ptr, this);
     }
 
     // MODIFIES: this
@@ -21,6 +46,16 @@ public class Environment {
     public Environment(Environment parent) {
         this.vars = new HashMap<>();
         this.parent = parent;
+        this.serialized = false;
+        this.ptr = Environment.heap.malloc(this);
+    }
+
+    public HashMap<java.lang.String, Sexpr> getVars() {
+        return this.vars;
+    }
+
+    public Environment getParent() {
+        return this.parent;
     }
 
     // EFFECT: Returns the Sexpr associated with key in vars or null if it doesn't
@@ -66,9 +101,7 @@ public class Environment {
     // EFFECT: Puts all the variables in the given Environment into this Environment,
     // then does the same with the parents if they exist.
     public void merge(Environment env) {
-        for (HashMap.Entry<java.lang.String, Sexpr> entry : env.vars.entrySet()) {
-            this.vars.put(entry.getKey(), entry.getValue());
-        }
+        this.vars = env.vars;
 
         if (env.parent != null) {
             if (this.parent == null) {
@@ -81,6 +114,14 @@ public class Environment {
 
     // EFFECT: Returns the JSON representation of this Environment.
     public JSONObject toJson() {
+	if (this.serialized) {
+            return new JSONObject()
+                    .put("type", "environment")
+                    .put("ptr", this.ptr);
+	}
+
+	this.serialized = true;
+
         JSONArray vars = new JSONArray();
 
         for (HashMap.Entry<java.lang.String, Sexpr> entry : this.vars.entrySet()) {
@@ -89,6 +130,7 @@ public class Environment {
 
         JSONObject obj = new JSONObject()
                 .put("type", "environment")
+                .put("ptr", this.ptr)
                 .put("vars", vars);
 
         if (this.parent != null) {
@@ -101,13 +143,23 @@ public class Environment {
     // EFFECT: Creates and returns an Environment based on the given JSON object.
     // Throws an Exception if the JSON object doesn't represent an Environment.
     public static Environment fromJson(JSONObject obj) throws Exception {
-        if (!(obj.has("type") && obj.getString("type").equals("environment"))) {
+        if (!obj.has("type") || !obj.getString("type").equals("environment") || !obj.has("ptr")) {
             throw new Exception("cannot parse Environment from %s", obj);
+        }
+
+        long ptr = obj.getLong("ptr");
+
+        Environment env = Environment.heap.get(ptr);
+
+        if (env != null) {
+	        return env;
+        } else if (!obj.has("vars")) {
+		throw new Exception("cannot parse Environment from %s", obj);
         }
 
         HashMap<java.lang.String, Sexpr> vars = new HashMap<>();
 
-        Environment env = new Environment();
+        env = new Environment(ptr);
 
         for (Object var : obj.getJSONArray("vars")) {
             if (var instanceof JSONObject) {
@@ -124,6 +176,6 @@ public class Environment {
 
         env.vars = vars;
 
-        return env;
+	return env;
     }
 }

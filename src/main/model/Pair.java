@@ -1,22 +1,51 @@
 package model;
 
 import org.json.*;
+import java.util.HashMap;
 
 // Represents a cons cell s-expression, the basic (and only) way of creating
 // compound data.
 public class Pair extends Sexpr {
     private Sexpr car;
     private Sexpr cdr;
+    private boolean serialized;
+    private long ptr;
+
+    private static Heap<Pair> heap = new Heap<>();
+
+    public static void resetHeap() {
+        heap = new Heap<>();
+    }
+
+    public static void resetSerializedTags() {
+        for (HashMap.Entry<Long, Pair> entry : heap.getHeap().entrySet()) {
+            entry.getValue().serialized= false;
+        }
+    }
 
     // EFFECT: Default constructor made incarnate.
     public Pair() {
+        this.car = null;
+        this.cdr = null;
+        this.serialized = false;
+        this.ptr = heap.malloc(this);
+    }
+
+    public Pair(long ptr) {
+        this.serialized = false;
+        this.ptr = ptr;
+        heap.put(ptr, this);
     }
 
     // MODIFIES: this
     // EFFECT: Initializes this Pair with the given car and cdr.
     public Pair(Sexpr car, Sexpr cdr) {
+        this.car = null;
+        this.cdr = null;
         this.car = car;
         this.cdr = cdr;
+        this.serialized = false;
+        this.ptr = heap.malloc(this);
     }
 
     // EFFECT: Creates and returns a new Pair representing a list of the given exprs.
@@ -100,8 +129,17 @@ public class Pair extends Sexpr {
 
     // EFFECT: Returns the JSON representation of this Pair.
     public JSONObject toJson() {
+	if (this.serialized) {
+            return new JSONObject()
+                    .put("type", "pair")
+                    .put("ptr", this.ptr);
+	}
+
+        this.serialized = true;
+
         return new JSONObject()
                 .put("type", "pair")
+                .put("ptr", this.ptr)
                 .put("car", this.car.toJson())
                 .put("cdr", this.cdr.toJson());
     }
@@ -109,11 +147,24 @@ public class Pair extends Sexpr {
     // EFFECT: Creates and returns a new Pair based on the given JSON object.
     // Throws an Exception if the given JSON object doesn't represent a Pair.
     public static Pair fromJson(Environment env, JSONObject obj) throws Exception {
-        if (obj.has("type") && obj.getString("type").equals("pair") && obj.has("car") && obj.has("cdr")) {
-            return new Pair(Sexpr.fromJson(env, obj.getJSONObject("car")),
-                    Sexpr.fromJson(env, obj.getJSONObject("cdr")));
-        } else {
+        if (!obj.has("type") || !obj.getString("type").equals("pair") || !obj.has("ptr")) {
             throw new Exception("cannot parse Pair from %s", obj);
         }
+
+        long ptr = obj.getLong("ptr");
+
+        Pair pair = Pair.heap.get(ptr);
+
+        if (pair != null) {
+            return pair;
+        } else if (!obj.has("car") || !obj.has("cdr")) {
+            throw new Exception("cannot parse Pair from %s", obj);
+        }
+
+        pair = new Pair(ptr);
+        pair.car = Sexpr.fromJson(env, obj.getJSONObject("car"));
+        pair.cdr = Sexpr.fromJson(env, obj.getJSONObject("cdr"));
+
+        return pair;
     }
 }

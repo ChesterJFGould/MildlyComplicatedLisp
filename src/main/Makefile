@@ -1,5 +1,5 @@
 all:
-	javac -cp ../../lib/json.jar */*.java 
+	javac -Xlint:unchecked -cp ../../lib/json.jar */*.java 
 
 debug:
 	javac -cp ../../lib/json.jar */*.java 2>&1 | less
