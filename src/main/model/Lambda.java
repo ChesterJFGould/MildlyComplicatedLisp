@@ -30,7 +30,7 @@ public class Lambda extends Procedure {
             return body.eval(funEnv);
         }));
 
-	this.env = env;
+        this.env = env;
         this.body = body;
     }
 
@@ -56,7 +56,7 @@ public class Lambda extends Procedure {
             return body.eval(funEnv);
         }));
 
-	this.env = env;
+        this.env = env;
         this.body = body;
     }
 
@@ -72,14 +72,15 @@ public class Lambda extends Procedure {
     // EFFECT: Creates and returns a new Lambda based on the given JSON object.
     // Throws an Exception if the given JSON object doesn't represent a Lambda.
     public static Lambda fromJson(Environment env, JSONObject obj) throws Exception {
-        if (obj.has("type") &&
-            obj.getString("type").equals("lambda") &&
-            obj.has("signature") &&
-            obj.has("body") &&
-            obj.has("env")) {
-            return new Lambda(Environment.fromJson(obj.getJSONObject("env")),
-                              Procedure.Signature.fromJson(obj.getJSONObject("signature")),
-                              Sexpr.fromJson(env, obj.getJSONObject("body")));
+        if (obj.has("type")
+                && obj.getString("type").equals("lambda")
+                && obj.has("signature")
+                && obj.has("body")
+                && obj.has("env")) {
+            Signature signature = Procedure.Signature.fromJson(obj.getJSONObject("signature"));
+            Sexpr body = Sexpr.fromJson(env, obj.getJSONObject("body"));
+            env = Environment.fromJson(obj.getJSONObject("env"));
+            return new Lambda(env, signature, body);
         } else {
             throw new Exception("cannot parse Lambda from %s", obj);
         }

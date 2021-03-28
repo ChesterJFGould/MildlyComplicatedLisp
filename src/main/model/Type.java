@@ -9,5 +9,6 @@ public enum Type {
     String,
     Symbol,
     Bool,
-    Procedure
+    Procedure,
+    Sound
 }

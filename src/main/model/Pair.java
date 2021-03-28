@@ -1,6 +1,7 @@
 package model;
 
 import org.json.*;
+
 import java.util.HashMap;
 
 // Represents a cons cell s-expression, the basic (and only) way of creating
@@ -17,9 +18,20 @@ public class Pair extends Sexpr {
         heap = new Heap<>();
     }
 
+    public static void restoreHeapPointer() {
+        long max = 0;
+        for (HashMap.Entry<Long, Pair> entry : heap.getHeap().entrySet()) {
+            if (entry.getValue().ptr > max) {
+                max = entry.getValue().ptr;
+            }
+        }
+
+        heap.setPtr(max + 1);
+    }
+
     public static void resetSerializedTags() {
         for (HashMap.Entry<Long, Pair> entry : heap.getHeap().entrySet()) {
-            entry.getValue().serialized= false;
+            entry.getValue().serialized = false;
         }
     }
 
@@ -81,6 +93,7 @@ public class Pair extends Sexpr {
     }
 
     // EFFECT: Returns the string representation of this Pair.
+    @Override
     public java.lang.String toString() {
         java.lang.String acc = "(";
 
@@ -129,11 +142,11 @@ public class Pair extends Sexpr {
 
     // EFFECT: Returns the JSON representation of this Pair.
     public JSONObject toJson() {
-	if (this.serialized) {
+        if (this.serialized) {
             return new JSONObject()
                     .put("type", "pair")
                     .put("ptr", this.ptr);
-	}
+        }
 
         this.serialized = true;
 

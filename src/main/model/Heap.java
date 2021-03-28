@@ -36,4 +36,8 @@ public class Heap<T> {
     public HashMap<Long, T> getHeap() {
         return this.heap;
     }
+
+    public void setPtr(long ptr) {
+        this.nextPtr = ptr;
+    }
 }

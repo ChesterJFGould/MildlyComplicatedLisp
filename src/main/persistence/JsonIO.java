@@ -11,7 +11,7 @@ public class JsonIO {
     // Writes the given JSON object to the given slo file name in the data directory.
     // Throws an Exception on IOException.
     public static void write(JSONObject obj, String fileName) throws Exception {
-        String path = "./data/" + fileName + ".slo";
+        String path = fileName;
         String json = obj.toString();
         try (FileWriter writer = new FileWriter(path, false)) {
             writer.write(json);
@@ -23,7 +23,7 @@ public class JsonIO {
     // Reads the given slo file name in the data directory into a JSON object.
     // Throws an Exception on IOException.
     public static JSONObject read(String fileName) throws Exception {
-        String path = "./data/" + fileName + ".slo";
+        String path = fileName;
         JSONObject out;
         try {
             String json = readFile(path);

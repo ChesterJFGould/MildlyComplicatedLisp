@@ -6,7 +6,7 @@ import org.json.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class MacroTest {
+public class    MacroTest {
     Macro id;
     Macro id2;
 

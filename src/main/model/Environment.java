@@ -3,6 +3,7 @@ package model;
 import java.util.HashMap;
 
 import org.json.*;
+
 import java.util.HashMap;
 
 // Represents the environment an s-expression is evaluated in.
@@ -15,12 +16,23 @@ public class Environment {
     private static Heap<Environment> heap = new Heap<>();
 
     public static void resetHeap() {
-	heap = new Heap<>();
+        heap = new Heap<>();
+    }
+
+    public static void restoreHeapPointer() {
+        long max = 0;
+        for (HashMap.Entry<Long, Environment> entry : heap.getHeap().entrySet()) {
+            if (entry.getValue().ptr > max) {
+                max = entry.getValue().ptr;
+            }
+        }
+
+        heap.setPtr(max + 1);
     }
 
     public static void resetSerializedTags() {
         for (HashMap.Entry<Long, Environment> entry : heap.getHeap().entrySet()) {
-	        entry.getValue().serialized = false;
+            entry.getValue().serialized = false;
         }
     }
 
@@ -97,11 +109,17 @@ public class Environment {
         }
     }
 
+    public void remove(java.lang.String key) {
+        this.vars.remove(key);
+    }
+
     // MODIFIES: this
     // EFFECT: Puts all the variables in the given Environment into this Environment,
     // then does the same with the parents if they exist.
     public void merge(Environment env) {
         this.vars = env.vars;
+        this.ptr = env.ptr;
+        heap.put(this.ptr, this);
 
         if (env.parent != null) {
             if (this.parent == null) {
@@ -114,13 +132,14 @@ public class Environment {
 
     // EFFECT: Returns the JSON representation of this Environment.
     public JSONObject toJson() {
-	if (this.serialized) {
+        if (heap.get(this.ptr).serialized) {
             return new JSONObject()
                     .put("type", "environment")
                     .put("ptr", this.ptr);
-	}
+        }
 
-	this.serialized = true;
+        this.serialized = true;
+        this.heap.get(this.ptr).serialized = true;
 
         JSONArray vars = new JSONArray();
 
@@ -152,9 +171,9 @@ public class Environment {
         Environment env = Environment.heap.get(ptr);
 
         if (env != null) {
-	        return env;
+            return env;
         } else if (!obj.has("vars")) {
-		throw new Exception("cannot parse Environment from %s", obj);
+            throw new Exception("cannot parse Environment from %s", obj);
         }
 
         HashMap<java.lang.String, Sexpr> vars = new HashMap<>();
@@ -165,17 +184,16 @@ public class Environment {
             if (var instanceof JSONObject) {
                 vars.put(((JSONObject) var).getString("key"),
                         Sexpr.fromJson(env, ((JSONObject) var).getJSONObject("value")));
-            } else {
-                throw new Exception("cannot parse Environment from %s", obj);
             }
         }
+
+        env.vars = vars;
 
         if (obj.has("parent")) {
             env.parent = Environment.fromJson(obj.getJSONObject("parent"));
         }
 
-        env.vars = vars;
 
-	return env;
+        return env;
     }
 }

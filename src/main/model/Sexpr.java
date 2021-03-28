@@ -97,7 +97,7 @@ public abstract class Sexpr {
         Pair pair = head;
         cs.eatWhitespace();
 
-        while (/*(*/!".)".contains(cs.peeks())) {
+        while (/*(*/!".)".contains(cs.peeks()) && !cs.done()) {
             pair.setCdr(new Pair(Sexpr.read(cs), new Null()));
             pair = (Pair) (pair.getCdr());
             cs.eatWhitespace();
@@ -132,6 +132,7 @@ public abstract class Sexpr {
             case "procedure": return Procedure.fromJson(obj);
             case "string": return String.fromJson(obj);
             case "symbol": return Symbol.fromJson(obj);
+            case "sound": return Sound.fromJson(obj);
         }
 
         throw new Exception("cannot parse Sexpr from %s", obj);

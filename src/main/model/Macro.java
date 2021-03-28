@@ -73,14 +73,15 @@ public class Macro extends Procedure {
     // EFFECT: Creates and returns a new Macro based on the given JSON object.
     // Throws an exception if the JSON object doesn't represent a Macro.
     public static Macro fromJson(Environment env, JSONObject obj) throws Exception {
-        if (obj.has("type") &&
-            obj.getString("type").equals("macro") &&
-            obj.has("signature") &&
-            obj.has("body") &&
-            obj.has("env")) {
-            return new Macro(Environment.fromJson(obj.getJSONObject("env")),
-                             Procedure.Signature.fromJson(obj.getJSONObject("signature")),
-                             Sexpr.fromJson(env, obj.getJSONObject("body")));
+        if (obj.has("type")
+                && obj.getString("type").equals("macro")
+                && obj.has("signature")
+                && obj.has("body")
+                && obj.has("env")) {
+	    Signature signature = Procedure.Signature.fromJson(obj.getJSONObject("signature"));
+	    Sexpr body = Sexpr.fromJson(env, obj.getJSONObject("body"));
+	    env = Environment.fromJson(obj.getJSONObject("env"));
+            return new Macro(env, signature, body);
         } else {
             throw new Exception("cannot parse Macro from %s", obj);
         }

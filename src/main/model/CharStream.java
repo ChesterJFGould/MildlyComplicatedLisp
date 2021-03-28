@@ -79,6 +79,9 @@ public class CharStream {
     // MODIFIES: this.
     // EFFECT: If the next char isn't equal to c throws an exception.
     public void expect(char c) throws Exception {
+        if (this.done()) {
+            throw new Exception("Unexpected EOF, expected %c", c);
+        }
         if (this.peek() != c) {
             throw new Exception("Expected %c but instead found %c", c, this.peek());
         }

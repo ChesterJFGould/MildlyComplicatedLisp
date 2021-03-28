@@ -1,7 +1,16 @@
 package ui;
 
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import model.*;
 import persistence.*;
+
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import java.io.File;
+import java.io.InputStream;
+import java.lang.Exception;
 
 public class Main {
     static MainUI ui;
@@ -11,6 +20,8 @@ public class Main {
         model.Environment env = new model.Environment();
 
         initSimpleLisp(env);
+
+        env = new Environment(env);
 
         ui = new MainUI(env);
 
@@ -89,7 +100,7 @@ public class Main {
             return pair;
         }));
         env.put("car", Procedure.newPairUnaryOperator("car", (Pair pair) -> pair.getCar()));
-        env.put("cdr", Procedure.newPairUnaryOperator("car", (Pair pair) -> pair.getCdr()));
+        env.put("cdr", Procedure.newPairUnaryOperator("cdr", (Pair pair) -> pair.getCdr()));
     }
 
     // MODIFIES: env
@@ -118,7 +129,7 @@ public class Main {
                 throw new model.Exception("Invalid args to def form %s, variable must be a symbol", defArgs.toString());
             }
             defArgs = ((Pair) defArgs).getCdr();
-            Sexpr val = ((Pair) defArgs).getCar().eval(env);
+            Sexpr val = ((Pair) defArgs).getCar().eval(defEnv);
 
             defEnv.put(((Symbol) var).getVal(), val);
 
@@ -138,7 +149,7 @@ public class Main {
                         defArgs.toString());
             }
             defArgs = ((Pair) defArgs).getCdr();
-            Sexpr val = ((Pair) defArgs).getCar().eval(env);
+            Sexpr val = ((Pair) defArgs).getCar().eval(defEnv);
 
             if (!defEnv.set(((Symbol) var).getVal(), val)) {
                 throw new model.Exception("Undefined variable %s", var.toString());
@@ -256,7 +267,7 @@ public class Main {
 
             java.lang.String path = ((model.String) pathExpr).getVal();
 
-            JsonIO.write(saveEnv.toJson(), path);
+            JsonIO.write(saveEnv.toJson(), "data/" + path + ".slo");
 
             Environment.resetSerializedTags();
             Pair.resetSerializedTags();
@@ -273,7 +284,7 @@ public class Main {
         env.put("load", new Procedure("load", "file", (Environment loadEnv, Sexpr args) -> {
             Sexpr pathExpr = ((Pair) args).getCar();
             if (!(pathExpr instanceof model.String)) {
-                throw new model.Exception("Invalid arg to save form %s, file must be a string", args.toString());
+                throw new model.Exception("Invalid arg to load form %s, file must be a string", args.toString());
             }
 
             Environment.resetHeap();
@@ -281,11 +292,63 @@ public class Main {
 
             java.lang.String path = ((model.String) pathExpr).getVal();
 
-            Environment newEnv = Environment.fromJson(JsonIO.read(path));
+            Environment newEnv = Environment.fromJson(JsonIO.read("data/" + path + ".slo"));
             loadEnv.merge(newEnv);
+
+            Environment.restoreHeapPointer();
+            Pair.restoreHeapPointer();
 
             return new Null();
         }));
+    }
+
+    // MODIFIES: env
+    // EFFECT: Adds the sound form to the given Environment.
+    // Doesn't actually throw an Exceptions but Java isn't smart enough to
+    // figure that out.
+    public static void initSoundForm(Environment env) throws model.Exception {
+        env.put("sound", new Procedure("sound", "file", (Environment loadEnv, Sexpr args) -> {
+            Sexpr pathExpr = ((Pair) args).getCar();
+            if (!(pathExpr instanceof model.String)) {
+                throw new model.Exception("Invalid arg to sound form %s, file must be a string", args.toString());
+            }
+
+            java.lang.String path = ((model.String) pathExpr).getVal();
+
+            return new Sound("data/" + path);
+        }));
+    }
+
+    // MODIFIES: env
+    // EFFECT: Adds the sound control forms to the given Environment.
+    // Doesn't actually throw an Exceptions but Java isn't smart enough to
+    // figure that out.
+    public static void initSoundControls(Environment env) throws model.Exception {
+        env.put("play", new Procedure("play", "sound", Procedure.evalWrapper((Environment loadEnv, Sexpr args) -> {
+            Sexpr soundExpr = ((Pair) args).getCar();
+            if (!(soundExpr instanceof model.Sound)) {
+                throw new model.Exception("Invalid arg to play form %s, sound must be a Sound", args.toString());
+            }
+
+            Sound sound = (Sound) soundExpr;
+
+            sound.play();
+
+            return new Null();
+        })));
+
+        env.put("pause", new Procedure("pause", "sound", Procedure.evalWrapper((Environment loadEnv, Sexpr args) -> {
+            Sexpr soundExpr = ((Pair) args).getCar();
+            if (!(soundExpr instanceof model.Sound)) {
+                throw new model.Exception("Invalid arg to play form %s, sound must be a Sound", args.toString());
+            }
+
+            Sound sound = (Sound) soundExpr;
+
+            sound.pause();
+
+            return new Null();
+        })));
     }
 
     // MODIFIES: env
@@ -307,5 +370,7 @@ public class Main {
         initBeginForm(env);
         initSaveForm(env);
         initLoadForm(env);
+        initSoundForm(env);
+        initSoundControls(env);
     }
 }
