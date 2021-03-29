@@ -15,10 +15,14 @@ public class Environment {
 
     private static Heap<Environment> heap = new Heap<>();
 
+    // MODIFIES: heap
+    // EFFECT: Replaces heap with a new heap.
     public static void resetHeap() {
         heap = new Heap<>();
     }
 
+    // MODIFIES: heap
+    // EFFECT: Sets the heap ptr to be higher than all entries it contains.
     public static void restoreHeapPointer() {
         long max = 0;
         for (HashMap.Entry<Long, Environment> entry : heap.getHeap().entrySet()) {
@@ -30,10 +34,18 @@ public class Environment {
         heap.setPtr(max + 1);
     }
 
+    // MODIFIES: heap
+    // EFFECT: Sets the serialized tags of all the Environments in the heap
+    // to false.
     public static void resetSerializedTags() {
         for (HashMap.Entry<Long, Environment> entry : heap.getHeap().entrySet()) {
             entry.getValue().serialized = false;
         }
+    }
+
+    // EFFECT: Returns the heap.
+    public static Heap<Environment> getHeap() {
+        return Environment.heap;
     }
 
     // MODIFIES: this
@@ -132,14 +144,17 @@ public class Environment {
 
     // EFFECT: Returns the JSON representation of this Environment.
     public JSONObject toJson() {
-        if (heap.get(this.ptr).serialized) {
+        Environment env = heap.get(this.ptr);
+        if (env != null && env.serialized) {
             return new JSONObject()
                     .put("type", "environment")
                     .put("ptr", this.ptr);
         }
 
         this.serialized = true;
-        this.heap.get(this.ptr).serialized = true;
+        if (env != null) {
+            env.serialized = true;
+        }
 
         JSONArray vars = new JSONArray();
 

@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.json.*;
 import org.json.*;
 
+import java.util.HashMap;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class EnvironmentTest {
@@ -30,7 +32,28 @@ public class EnvironmentTest {
     }
 
     @Test
+    void heapTest() {
+        Environment.resetHeap();
+
+        new Environment(5);
+        new Environment(3);
+
+        Environment.restoreHeapPointer();
+
+        assertEquals(6, Environment.getHeap().getPtr());
+    }
+
+    @Test
+    void constructorTest() {
+        HashMap<java.lang.String, Sexpr> hm = new HashMap<>();
+        hm.put("a", new Symbol("a"));
+        assertEquals(hm.toString(), this.a.getVars().toString());
+        assertEquals(this.a, this.empty.getParent());
+    }
+
+    @Test
     void constructorGetPutTest() {
+
         assertTrue(this.b.get("a").equals(new Symbol("a")));
         assertTrue(this.b.get("b").equals(new Symbol("b")));
         assertNull(this.empty.get("b"));
@@ -75,10 +98,16 @@ public class EnvironmentTest {
     @Test
     void fromJsonTest() throws Exception {
         Environment.resetSerializedTags();
-        assertEquals("{\"vars\":[{\"value\":{\"type\":\"symbol\",\"value\":\"a\"},\"key\":\"a\"}],\"type\":\"environment\",\"ptr\":0}", a.toJson().toString());
+        JSONObject jsonO = a.toJson();
+        Environment.resetSerializedTags();
+        Environment.resetHeap();
+        assertEquals("{\"vars\":[{\"value\":{\"type\":\"symbol\",\"value\":\"a\"},\"key\":\"a\"}],\"type\":\"environment\",\"ptr\":0}", Environment.fromJson(jsonO).toJson().toString());
 
         Environment.resetSerializedTags();
-        assertEquals("{\"parent\":{\"vars\":[{\"value\":{\"type\":\"symbol\",\"value\":\"c\"},\"key\":\"c\"}],\"type\":\"environment\",\"ptr\":3},\"vars\":[{\"value\":{\"type\":\"symbol\",\"value\":\"d\"},\"key\":\"d\"}],\"type\":\"environment\",\"ptr\":4}", d.toJson().toString());
+        jsonO = d.toJson();
+        Environment.resetSerializedTags();
+        Environment.resetHeap();
+        assertEquals("{\"parent\":{\"vars\":[{\"value\":{\"type\":\"symbol\",\"value\":\"c\"},\"key\":\"c\"}],\"type\":\"environment\",\"ptr\":3},\"vars\":[{\"value\":{\"type\":\"symbol\",\"value\":\"d\"},\"key\":\"d\"}],\"type\":\"environment\",\"ptr\":4}", Environment.fromJson(jsonO).toJson().toString());
 
         assertThrows(Exception.class, () -> Environment.fromJson(new Null().toJson()));
 
