@@ -50,7 +50,7 @@ public class SoundTest {
     void playPauseTest() throws InterruptedException {
         assertFalse(this.florence.getClip().isRunning());
         this.florence.play();
-        Thread.sleep(1000);
+        Thread.sleep(2000);
         assertTrue(this.florence.getClip().isActive());
         this.florence.pause();
         assertFalse(this.florence.getClip().isRunning());
