@@ -19,8 +19,9 @@ public class SoundTest {
     }
 
     @Test
-    void constructorTest() {
+    void constructorTest() throws Exception {
         assertEquals("data/Florence.wav", this.florence.getPath());
+        assertThrows(Exception.class, () -> new Sound("THIS IS NOT A FILE"));
     }
 
     @Test
@@ -43,6 +44,16 @@ public class SoundTest {
         assertTrue(florence.equals(florence));
         assertFalse(florence.equals(new Sound("data/Florence.wav")));
         assertFalse(florence.equals(new Null()));
+    }
+
+    @Test
+    void playPauseTest() throws InterruptedException {
+        assertFalse(this.florence.getClip().isRunning());
+        this.florence.play();
+        Thread.sleep(1000);
+        assertTrue(this.florence.getClip().isActive());
+        this.florence.pause();
+        assertFalse(this.florence.getClip().isRunning());
     }
 
     @Test

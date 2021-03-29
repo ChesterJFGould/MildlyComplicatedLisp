@@ -10,8 +10,8 @@ import javax.sound.sampled.Clip;
 
 // Represents a boolean s-expession
 public class Sound extends Sexpr {
-    Clip clip;
-    java.lang.String path;
+    private Clip clip;
+    private java.lang.String path;
 
     // MODIFIES: this
     // EFFECT: Initializes a new bool.
@@ -80,5 +80,10 @@ public class Sound extends Sexpr {
     // EFFECT: Pause the clip.
     public void pause() {
         this.clip.stop();
+    }
+
+    // EFFECT: Returns this clip.
+    public Clip getClip() {
+        return this.clip;
     }
 }

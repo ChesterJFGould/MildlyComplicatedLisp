@@ -67,6 +67,15 @@ public class EnvironmentTest {
     }
 
     @Test
+    void removeTest() {
+        this.a.remove("a");
+        assertNull(this.a.get("a"));
+
+        this.d.remove("c");
+        assertNotNull(this.d.get("c"));
+    }
+
+    @Test
     void mergeTest() {
         this.d.merge(this.b);
 

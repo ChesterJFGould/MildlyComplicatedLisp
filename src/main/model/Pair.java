@@ -14,10 +14,14 @@ public class Pair extends Sexpr {
 
     private static Heap<Pair> heap = new Heap<>();
 
+    // MODIFIES: heap
+    // EFFECT: Replaces heap with a new heap.
     public static void resetHeap() {
         heap = new Heap<>();
     }
 
+    // MODIFIES: heap
+    // EFFECT: Sets the heap ptr to be higher than all entries it contains.
     public static void restoreHeapPointer() {
         long max = 0;
         for (HashMap.Entry<Long, Pair> entry : heap.getHeap().entrySet()) {
@@ -29,10 +33,18 @@ public class Pair extends Sexpr {
         heap.setPtr(max + 1);
     }
 
+    // MODIFIES: heap
+    // EFFECT: Sets the serialized tags of all the Environments in the heap
+    // to false.
     public static void resetSerializedTags() {
         for (HashMap.Entry<Long, Pair> entry : heap.getHeap().entrySet()) {
             entry.getValue().serialized = false;
         }
+    }
+
+    // EFFECT: Returns the heap.
+    public static Heap<Pair> getHeap() {
+        return Pair.heap;
     }
 
     // EFFECT: Default constructor made incarnate.
@@ -43,6 +55,8 @@ public class Pair extends Sexpr {
         this.ptr = heap.malloc(this);
     }
 
+    // MODIFIES: this
+    // EFFECT: Initializes this Pair with the given pointer.
     public Pair(long ptr) {
         this.serialized = false;
         this.ptr = ptr;

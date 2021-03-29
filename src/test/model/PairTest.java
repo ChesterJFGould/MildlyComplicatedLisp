@@ -30,6 +30,18 @@ public class PairTest {
     }
 
     @Test
+    void heapTest() {
+        Pair.resetHeap();
+
+        new Pair(5);
+        new Pair(3);
+
+        Pair.restoreHeapPointer();
+
+        assertEquals(6, Pair.getHeap().getPtr());
+    }
+
+    @Test
     void constructorTest() {
         assertEquals(null, this.base.getCar());
         assertEquals(null, this.base.getCdr());
@@ -90,9 +102,12 @@ public class PairTest {
     @Test
     void fromJsonTest() throws Exception {
         Pair.resetSerializedTags();
-        assertEquals("{\"cdr\":{\"type\":\"integer\",\"value\":2},\"car\":{\"type\":\"integer\",\"value\":1},\"type\":\"pair\",\"ptr\":1}", this.oneTwo.toJson().toString());
+        assertEquals("{\"type\":\"pair\",\"ptr\":4}", Pair.fromJson(new Environment(), this.oneTwoThree.toJson()).toJson().toString());
         Pair.resetSerializedTags();
-        assertEquals("{\"cdr\":{\"cdr\":{\"cdr\":{\"type\":\"null\"},\"car\":{\"type\":\"integer\",\"value\":3},\"type\":\"pair\",\"ptr\":2},\"car\":{\"type\":\"integer\",\"value\":2},\"type\":\"pair\",\"ptr\":3},\"car\":{\"type\":\"integer\",\"value\":1},\"type\":\"pair\",\"ptr\":4}", this.oneTwoThree.toJson().toString());
+        JSONObject jsonO = this.oneTwo.toJson();
+        Pair.resetSerializedTags();
+        Pair.resetHeap();
+        assertEquals("{\"cdr\":{\"type\":\"integer\",\"value\":2},\"car\":{\"type\":\"integer\",\"value\":1},\"type\":\"pair\",\"ptr\":1}", Pair.fromJson(new Environment(), jsonO).toJson().toString());
 
         assertThrows(Exception.class, () -> Pair.fromJson(new Environment(), new Null().toJson()));
         assertThrows(Exception.class, () -> Pair.fromJson(new Environment(), new JSONObject("{}")));

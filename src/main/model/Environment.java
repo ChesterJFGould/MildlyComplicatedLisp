@@ -57,6 +57,8 @@ public class Environment {
         this.ptr = Environment.heap.malloc(this);
     }
 
+    // MODIFIES: this
+    // EFFECT: Initializes this Environment with the given pointer.
     public Environment(long ptr) {
         this.vars = new HashMap<>();
         this.parent = null;
