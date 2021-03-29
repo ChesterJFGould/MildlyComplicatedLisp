@@ -12,6 +12,7 @@ public class LambdaTest {
 
     @BeforeEach
     void setup() throws Exception {
+        Environment.resetHeap();
         this.id = new Lambda(new Environment(), new Pair(new Symbol("a"), new Symbol("b")), new Symbol("a"));
         this.id2 = new Lambda(new Environment(), new Procedure.Signature("a . b"), new Symbol("a"));
     }
@@ -24,14 +25,16 @@ public class LambdaTest {
 
     @Test
     void toJsonTest() {
-        assertEquals("{\"signature\":{\"args\":[\"a\"],\"vararg\":\"b\",\"type\":\"signature\"},\"type\":\"lambda\",\"body\":{\"type\":\"symbol\",\"value\":\"a\"}}", this.id.toJson().toString());
-        assertEquals("{\"signature\":{\"args\":[\"a\"],\"vararg\":\"b\",\"type\":\"signature\"},\"type\":\"lambda\",\"body\":{\"type\":\"symbol\",\"value\":\"a\"}}", this.id2.toJson().toString());
+        assertEquals("{\"signature\":{\"args\":[\"a\"],\"vararg\":\"b\",\"type\":\"signature\"},\"type\":\"lambda\",\"env\":{\"vars\":[],\"type\":\"environment\",\"ptr\":0},\"body\":{\"type\":\"symbol\",\"value\":\"a\"}}", this.id.toJson().toString());
+        assertEquals("{\"signature\":{\"args\":[\"a\"],\"vararg\":\"b\",\"type\":\"signature\"},\"type\":\"lambda\",\"env\":{\"vars\":[],\"type\":\"environment\",\"ptr\":1},\"body\":{\"type\":\"symbol\",\"value\":\"a\"}}", this.id2.toJson().toString());
     }
 
     @Test
     void fromJsonTest() throws Exception {
-        assertEquals(this.id.toJson().toString(), Lambda.fromJson(new Environment(), this.id.toJson()).toJson().toString());
-        assertEquals(this.id2.toJson().toString(), Lambda.fromJson(new Environment(), this.id2.toJson()).toJson().toString());
+        Environment.resetSerializedTags();
+        assertEquals("{\"signature\":{\"args\":[\"a\"],\"vararg\":\"b\",\"type\":\"signature\"},\"type\":\"lambda\",\"env\":{\"type\":\"environment\",\"ptr\":0},\"body\":{\"type\":\"symbol\",\"value\":\"a\"}}", Lambda.fromJson(new Environment(), this.id.toJson()).toJson().toString());
+        Environment.resetSerializedTags();
+        assertEquals("{\"signature\":{\"args\":[\"a\"],\"vararg\":\"b\",\"type\":\"signature\"},\"type\":\"lambda\",\"env\":{\"type\":\"environment\",\"ptr\":1},\"body\":{\"type\":\"symbol\",\"value\":\"a\"}}", Lambda.fromJson(new Environment(), this.id2.toJson()).toJson().toString());
 
         assertThrows(Exception.class, () -> Lambda.fromJson(new Environment(), new Null().toJson()));
         assertThrows(Exception.class, () -> Lambda.fromJson(new JSONObject("{}")));

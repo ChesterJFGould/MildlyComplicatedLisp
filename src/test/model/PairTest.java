@@ -15,6 +15,7 @@ public class PairTest {
 
     @BeforeEach
     void setup() throws Exception {
+        Pair.resetHeap();
         this.base = new Pair();
         this.oneTwo = new Pair(new Int(1), new Int(2));
         this.oneTwoThree = (Pair) Pair.list(new Int(1), new Int(2), new Int(3));
@@ -75,14 +76,23 @@ public class PairTest {
 
     @Test
     void toJsonTest() {
-        assertEquals("{\"cdr\":{\"type\":\"integer\",\"value\":2},\"car\":{\"type\":\"integer\",\"value\":1},\"type\":\"pair\"}", this.oneTwo.toJson().toString());
-        assertEquals("{\"cdr\":{\"cdr\":{\"cdr\":{\"type\":\"null\"},\"car\":{\"type\":\"integer\",\"value\":3},\"type\":\"pair\"},\"car\":{\"type\":\"integer\",\"value\":2},\"type\":\"pair\"},\"car\":{\"type\":\"integer\",\"value\":1},\"type\":\"pair\"}", this.oneTwoThree.toJson().toString());
+        Pair.resetSerializedTags();
+        assertEquals("{\"cdr\":{\"type\":\"integer\",\"value\":2},\"car\":"
+                        + "{\"type\":\"integer\",\"value\":1},\"type\":\"pair\",\"ptr\":1}",
+                this.oneTwo.toJson().toString());
+        Pair.resetSerializedTags();
+        assertEquals("{\"cdr\":{\"cdr\":{\"cdr\":{\"type\":\"null\"},\"car\":{\"type\":\"integer\",\"value\":3},"
+                        + "\"type\":\"pair\",\"ptr\":2},\"car\":{\"type\":\"integer\",\"value\":2},\"type\":\"pair\","
+                        + "\"ptr\":3},\"car\":{\"type\":\"integer\",\"value\":1},\"type\":\"pair\",\"ptr\":4}",
+                this.oneTwoThree.toJson().toString());
     }
 
     @Test
     void fromJsonTest() throws Exception {
-        assertEquals(this.oneTwo.toJson().toString(), Pair.fromJson(new Environment(), this.oneTwo.toJson()).toJson().toString());
-        assertEquals(this.oneTwoThree.toJson().toString(), Pair.fromJson(new Environment(), this.oneTwoThree.toJson()).toJson().toString());
+        Pair.resetSerializedTags();
+        assertEquals("{\"cdr\":{\"type\":\"integer\",\"value\":2},\"car\":{\"type\":\"integer\",\"value\":1},\"type\":\"pair\",\"ptr\":1}", this.oneTwo.toJson().toString());
+        Pair.resetSerializedTags();
+        assertEquals("{\"cdr\":{\"cdr\":{\"cdr\":{\"type\":\"null\"},\"car\":{\"type\":\"integer\",\"value\":3},\"type\":\"pair\",\"ptr\":2},\"car\":{\"type\":\"integer\",\"value\":2},\"type\":\"pair\",\"ptr\":3},\"car\":{\"type\":\"integer\",\"value\":1},\"type\":\"pair\",\"ptr\":4}", this.oneTwoThree.toJson().toString());
 
         assertThrows(Exception.class, () -> Pair.fromJson(new Environment(), new Null().toJson()));
         assertThrows(Exception.class, () -> Pair.fromJson(new Environment(), new JSONObject("{}")));

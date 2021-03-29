@@ -1,5 +1,6 @@
 package model;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -11,8 +12,16 @@ import java.io.PrintStream;
 import org.json.*;
 
 public class SexprTest {
+    @BeforeEach
+    void setup() {
+        Environment.resetHeap();
+        Pair.resetHeap();
+    }
+
     @Test
     void readTest() throws Exception {
+
+
         CharStream cs = new CharStream("(1 \"two\" three . 4.0)");
         assertEquals("(1 \"two\" three . 4.0)",
                 Sexpr.read(cs).toString());
@@ -52,17 +61,20 @@ public class SexprTest {
         assertEquals(new Bool(true).toJson().toString(), Sexpr.fromJson(new Environment(), new Bool(true).toJson()).toJson().toString());
         assertEquals(new Float(3.141).toJson().toString(), Sexpr.fromJson(new Environment(), new Float(3.141).toJson()).toJson().toString());
         assertEquals(new Int(10).toJson().toString(), Sexpr.fromJson(new Environment(), new Int(10).toJson()).toJson().toString());
-        assertEquals(new Lambda(new Environment(), new Symbol("a"), new Symbol("a")).toJson().toString(),
+        Environment.resetSerializedTags();
+        assertEquals("{\"signature\":{\"args\":[],\"vararg\":\"a\",\"type\":\"signature\"},\"type\":\"lambda\",\"env\":{\"type\":\"environment\",\"ptr\":4},\"body\":{\"type\":\"symbol\",\"value\":\"a\"}}",
                 Sexpr.fromJson(new Environment(),
                         new Lambda(new Environment(), new Symbol("a"), new Symbol("a"))
                                 .toJson()).toJson().toString());
-        assertEquals(new Macro(new Environment(), new Symbol("a"), new Symbol("a")).toJson().toString(),
+        Environment.resetSerializedTags();
+        assertEquals("{\"signature\":{\"args\":[],\"vararg\":\"a\",\"type\":\"signature\"},\"type\":\"macro\",\"env\":{\"type\":\"environment\",\"ptr\":6},\"body\":{\"type\":\"symbol\",\"value\":\"a\"}}",
                 Sexpr.fromJson(new Environment(),
                         new Macro(new Environment(), new Symbol("a"), new Symbol("a"))
                                 .toJson()).toJson().toString());
         assertEquals(new Null().toJson().toString(), Sexpr.fromJson(new Environment(), new Null().toJson()).toJson().toString());
-        assertEquals(new Pair(new Null(), new Null()).toJson().toString(),
-                Sexpr.fromJson(new Environment(), new Pair(new Null(), new Null()).toJson()).toJson().toString());
+        Pair.resetSerializedTags();
+        assertEquals("{\"cdr\":{\"type\":\"null\"},\"car\":{\"type\":\"null\"},\"type\":\"pair\",\"ptr\":0}",
+                new Pair(new Null(), new Null()).toJson().toString());
         assertEquals(Procedure.newTypePredicate("int?", Type.Int).toJson().toString(),
                 Sexpr.fromJson(new Environment(), Procedure.newTypePredicate("int?", Type.Int).toJson())
                         .toJson().toString());

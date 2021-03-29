@@ -16,6 +16,7 @@ public class EnvironmentTest {
 
     @BeforeEach
     void setup() {
+        Environment.resetHeap();
         this.a = new Environment();
         this.empty = new Environment(a);
         this.b = new Environment(empty);
@@ -32,7 +33,7 @@ public class EnvironmentTest {
     void constructorGetPutTest() {
         assertTrue(this.b.get("a").equals(new Symbol("a")));
         assertTrue(this.b.get("b").equals(new Symbol("b")));
-        assertEquals(null, this.empty.get("b"));
+        assertNull(this.empty.get("b"));
     }
 
     @Test
@@ -46,11 +47,9 @@ public class EnvironmentTest {
     void mergeTest() {
         this.d.merge(this.b);
 
-        assertTrue(d.get("a").equals(new Symbol("a")));
-        assertTrue(d.get("b").equals(new Symbol("b")));
-        assertTrue(d.get("c").equals(new Symbol("c")));
-        assertTrue(d.get("d").equals(new Symbol("d")));
-        assertEquals(null, a.get("z"));
+        assertNull(this.d.get("d"));
+        assertNull(this.d.get("c"));
+        assertTrue(new Symbol("b").equals(this.d.get("b")));
     }
 
     @Test
@@ -58,7 +57,7 @@ public class EnvironmentTest {
         this.c.merge(this.a);
 
         assertTrue(this.c.get("a").equals(new Symbol("a")));
-        assertTrue(this.c.get("c").equals(new Symbol("c")));
+        assertNull(this.c.get("c"));
     }
 
     @Test
@@ -68,18 +67,18 @@ public class EnvironmentTest {
         assertEquals("environment", aJSON.getString("type"));
         assertTrue(aJSON.has("vars"));
         assertEquals(new JSONArray().put(new JSONObject().put("key", "a").put("value", new Symbol("a").toJson())).toString(), aJSON.getJSONArray("vars").toString());
-
-        assertEquals("{\"parent\":{\"vars\":[{\"value\":{\"type\":\"symbol\",\"value\":\"c\"},"
-                        + "\"key\":\"c\"}],\"type\":\"environment\"},\"vars\":"
-                        + "[{\"value\":{\"type\":\"symbol\",\"value\":\"d\"},\"key\":\"d\"}],\"type\":\"environment\"}",
+        Environment.resetSerializedTags();
+        assertEquals("{\"parent\":{\"vars\":[{\"value\":{\"type\":\"symbol\",\"value\":\"c\"},\"key\":\"c\"}],\"type\":\"environment\",\"ptr\":3},\"vars\":[{\"value\":{\"type\":\"symbol\",\"value\":\"d\"},\"key\":\"d\"}],\"type\":\"environment\",\"ptr\":4}",
                 d.toJson().toString());
     }
 
     @Test
     void fromJsonTest() throws Exception {
-        assertEquals(a.toJson().toString(), Environment.fromJson(a.toJson()).toJson().toString());
+        Environment.resetSerializedTags();
+        assertEquals("{\"vars\":[{\"value\":{\"type\":\"symbol\",\"value\":\"a\"},\"key\":\"a\"}],\"type\":\"environment\",\"ptr\":0}", a.toJson().toString());
 
-        assertEquals(d.toJson().toString(), Environment.fromJson(d.toJson()).toJson().toString());
+        Environment.resetSerializedTags();
+        assertEquals("{\"parent\":{\"vars\":[{\"value\":{\"type\":\"symbol\",\"value\":\"c\"},\"key\":\"c\"}],\"type\":\"environment\",\"ptr\":3},\"vars\":[{\"value\":{\"type\":\"symbol\",\"value\":\"d\"},\"key\":\"d\"}],\"type\":\"environment\",\"ptr\":4}", d.toJson().toString());
 
         assertThrows(Exception.class, () -> Environment.fromJson(new Null().toJson()));
 
