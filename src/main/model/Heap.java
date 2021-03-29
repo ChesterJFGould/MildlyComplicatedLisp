@@ -16,15 +16,6 @@ public class Heap<T> {
         return this.nextPtr++;
     }
 
-    public T sync(long ptr, T obj) {
-        if (this.heap.containsKey(ptr)) {
-            return this.heap.get(ptr);
-        } else {
-            this.heap.put(ptr, obj);
-            return obj;
-        }
-    }
-
     public T get(long ptr) {
         return this.heap.get(ptr);
     }
@@ -39,5 +30,9 @@ public class Heap<T> {
 
     public void setPtr(long ptr) {
         this.nextPtr = ptr;
+    }
+
+    public long getPtr() {
+        return this.nextPtr;
     }
 }
