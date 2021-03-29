@@ -43,6 +43,10 @@ public class Sound extends Sexpr {
         return Type.Sound;
     }
 
+    // EFFECTS: Returns this path.
+    public java.lang.String getPath() {
+        return this.path;
+    }
 
     // EFFECTS: Returns true if expr the same object
     public boolean equals(Sexpr expr) {
