@@ -276,3 +276,11 @@ Error : Undefined variable fib
 > (fib 10)
 89
 ```
+
+## Phase 4: Task 3
++ Abstract Lambda and Macro.
++ Rewrite eval in the State monad.
++ Rewrite the parser in the Parser monad.
++ Rewrite methods that could fail in the Maybe or Either monad.
++ Sexpr could probably become generic and then most subclasses could be deleted.
++ Implement a Saveable interface for JSON save/load.
