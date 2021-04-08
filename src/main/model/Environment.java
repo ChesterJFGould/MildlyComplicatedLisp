@@ -5,10 +5,11 @@ import java.util.HashMap;
 import org.json.*;
 
 import java.util.HashMap;
+import java.util.Map;
 
 // Represents the environment an s-expression is evaluated in.
 public class Environment {
-    private HashMap<java.lang.String, Sexpr> vars;
+    private Map<java.lang.String, Sexpr> vars;
     private Environment parent;
     private long ptr;
     private boolean serialized;
@@ -76,7 +77,7 @@ public class Environment {
         this.ptr = Environment.heap.malloc(this);
     }
 
-    public HashMap<java.lang.String, Sexpr> getVars() {
+    public Map<java.lang.String, Sexpr> getVars() {
         return this.vars;
     }
 

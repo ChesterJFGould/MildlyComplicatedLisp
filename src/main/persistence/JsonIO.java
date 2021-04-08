@@ -7,7 +7,7 @@ import java.io.*;
 import org.json.*;
 
 // Essentially a namespace around IO operations that act on JSON objects.
-public class JsonIO {
+public abstract class JsonIO {
     // Writes the given JSON object to the given slo file name in the data directory.
     // Throws an Exception on IOException.
     public static void write(JSONObject obj, String fileName) throws Exception {
