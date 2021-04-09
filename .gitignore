@@ -1,8 +1,15 @@
 *
 
-!*/*.java
-!*/*.md
+!**/
+
+out
+
+!.gitignore
+!**/Makefile
+!**.java
+!**/*.md
 !LICENSE
-!*/*.slo
-!*/*.pdf
-!*/*.jar
+!**/*.slo
+!**/*.pdf
+!**/*.jar
+!**/*.uxf
