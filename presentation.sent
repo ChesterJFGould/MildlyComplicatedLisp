@@ -31,3 +31,13 @@ x
 (apply + '(1 2))
 ->
 3
+
+\
+
+Things I would change
+
+Save the continuation not the environment.
+
+State, Parser, Maybe, Either monads.
+
+\
