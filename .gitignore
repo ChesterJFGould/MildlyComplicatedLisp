@@ -1,2 +1,8 @@
-*.class
-workspace.xml
+*
+
+!*/*.java
+!*/*.md
+!LICENSE
+!*/*.slo
+!*/*.pdf
+!*/*.jar
