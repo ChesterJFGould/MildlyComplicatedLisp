@@ -1,0 +1,33 @@
+\
+
+S̶i̶m̶p̶l̶e̶ Mildly Complicated Lisp (MCLisp)
+
+BSL ≈ Lisp
+
+MCLisp = language implementation + serialization + GUI
+
+DEMO!
+
+\
+
+(map if (list true false true) '(1 1 1) '(2 2 2))
+->
+(1 2 1)
+
+(def define def)
+(define x 10)
+x
+->
+10
+
+(def or (macro (p1 p2) (list if p1 true p2)))
+
+(def eval (macro (expr) ((macro () expr))))
+(eval (list '+ 1 2))
+->
+3
+
+(def apply (macro (proc . args) ...))
+(apply + '(1 2))
+->
+3

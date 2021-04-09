@@ -5,6 +5,7 @@
 out
 
 !.gitignore
+!**/*.sent
 !**/Makefile
 !**.java
 !**/*.md
