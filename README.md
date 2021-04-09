@@ -277,7 +277,7 @@ Error : Undefined variable fib
 89
 ```
 
-## Phase 4: Task 3
+## TODO
 + Abstract Lambda and Macro.
 + Rewrite eval in the State monad.
 + Rewrite the parser in the Parser monad.
