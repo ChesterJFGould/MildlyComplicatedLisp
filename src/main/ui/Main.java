@@ -187,7 +187,7 @@ public class Main {
     public static void initIfForm(Environment env) throws model.Exception {
         env.put("if", new Procedure("if", "predicate consequence alternative", (Environment ifEnv, Sexpr ifArgs) -> {
             Sexpr pred = ((Pair) ifArgs).getCar().eval(ifEnv);
-            System.out.println(pred);
+
             ifArgs = ((Pair) ifArgs).getCdr();
             if ((pred.type() == Type.Bool) && !((Bool) pred).getVal()) {
                 ifArgs = ((Pair) ifArgs).getCdr();
