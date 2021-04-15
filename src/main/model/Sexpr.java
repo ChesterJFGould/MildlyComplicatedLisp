@@ -49,7 +49,7 @@ public abstract class Sexpr {
     }
 
     // EFFECT: Return an atom (Symbol, Int, Float) read from cs.
-    private static Sexpr readAtom(CharStream cs) throws Exception {
+    private static Sexpr readAtom(CharStream cs) {
         java.lang.String atom = cs.readUntil(
                 c -> Character.isWhitespace(c) || "()\"".contains(Character.toString(c)));
         if (atom.matches("[\\-\\+]?\\d+")) {

@@ -6,9 +6,11 @@ import persistence.*;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.lang.Exception;
+import java.lang.String;
 
 public class Main {
     static MainUI ui;
@@ -156,6 +158,19 @@ public class Main {
             return new Null();
         }));
     }
+
+    // MODIFIES: env
+    // EFFECT: Adds the map function to the given Environment.
+    public static void initMapForm(Environment env) throws model.Exception {
+            String mapdef = "(def map (lambda (f l)\n" +
+                    "  (if (null? l)\n" +
+                    "      '()\n" +
+                    "      (cons (f (car l)) (map f (cdr l))))))";
+            InputStream map = new ByteArrayInputStream(mapdef.getBytes());
+            Sexpr expr = Sexpr.read(new CharStream(map));
+
+            expr.eval(env);
+        }
 
     // MODIFIES: env
     // EFFECT: Adds the simple equality predicate to the given Environment.
@@ -371,5 +386,6 @@ public class Main {
         initLoadForm(env);
         initSoundForm(env);
         initSoundControls(env);
+        initMapForm(env);
     }
 }
